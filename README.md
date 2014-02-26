@@ -1,0 +1,2 @@
+jackson-jaxrs-propertyfiltering
+===============================
