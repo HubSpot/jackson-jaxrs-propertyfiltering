@@ -25,7 +25,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 @Provider
@@ -66,10 +65,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
 
     JsonNode tree = toTree(o, type, genericType, annotations, mediaType, httpHeaders);
-
-    if (tree != null) {
-      propertyFilter.filter(tree);
-    }
+    propertyFilter.filter(tree);
 
     write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
   }

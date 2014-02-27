@@ -56,12 +56,10 @@ public class PropertyFilter {
         }
 
         nestedFilter.addProperty(excluded ? "!" + suffix : suffix);
+      } else if (excluded) {
+        excludedProperties.add(property);
       } else {
-        if (excluded) {
-          excludedProperties.add(property);
-        } else {
-          includedProperties.add(property);
-        }
+        includedProperties.add(property);
       }
     }
 
