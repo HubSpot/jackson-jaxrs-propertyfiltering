@@ -67,10 +67,8 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
 
     JsonNode tree = toTree(o, type, genericType, annotations, mediaType, httpHeaders);
 
-    JsonNode toFilter = "".equals(annotation.on()) ? tree : tree.get(annotation.on());
-
-    if (toFilter != null && toFilter.isArray()) {
-      propertyFilter.filter((ArrayNode) toFilter);
+    if (tree != null) {
+      propertyFilter.filter(tree);
     }
 
     write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);

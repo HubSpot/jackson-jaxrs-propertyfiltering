@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.hubspot.jackson.jaxrs.util.Helper;
 import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
-import com.hubspot.jackson.jaxrs.util.TestResource.TestObjectWrapper;
 import org.eclipse.jetty.server.Server;
 import org.fest.util.Strings;
 import org.junit.AfterClass;
@@ -81,7 +80,6 @@ public abstract class AbstractIntegrationTest {
 
   protected abstract String path();
   protected abstract String queryParamName();
-  protected abstract boolean wrapped();
 
   private List<TestObject> getObjects(String... queryParams) throws IOException {
     String urlString = "http://localhost:" + port + "/test" + path();
@@ -91,14 +89,7 @@ public abstract class AbstractIntegrationTest {
 
     URL url = new URL(urlString);
 
-    if (wrapped()) {
-      TestObjectWrapper wrapper = reader.withType(TestObjectWrapper.class).readValue(url.openStream());
-      assertThat(wrapper.getCount()).isEqualTo(10);
-      assertThat(wrapper.getHasMore()).isTrue();
-      return wrapper.getObjects();
-    } else {
-      return reader.withType(listType).readValue(url.openStream());
-    }
+    return reader.withType(listType).readValue(url.openStream());
   }
 
   private static void assertIdPresent(List<TestObject> objects) {

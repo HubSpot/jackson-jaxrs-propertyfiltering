@@ -1,5 +1,8 @@
 package com.hubspot.jackson.jaxrs;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -7,40 +10,76 @@ import java.util.Arrays;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PropertyFilterTest {
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   @Test
   public void testNoFilters() {
-    PropertyFilter filter = filterOf();
+    JsonNode node = filter();
 
-    assertThat(filter.includes("propA")).isTrue();
-    assertThat(filter.includes("propB")).isTrue();
+    assertThat(node.get("propA").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propA").get("key2").textValue()).isEqualTo("value2");
+    assertThat(node.get("propB").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propB").get("key2").textValue()).isEqualTo("value2");
   }
 
   @Test
   public void testInclude() {
-    PropertyFilter filter = filterOf("propA");
+    JsonNode node = filter("propA");
 
-    assertThat(filter.includes("propA")).isTrue();
-    assertThat(filter.includes("propB")).isFalse();
+    assertThat(node.get("propA").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propA").get("key2").textValue()).isEqualTo("value2");
+    assertThat(node.has("propB")).isFalse();
   }
 
   @Test
   public void testExclude() {
-    PropertyFilter filter = filterOf("!propA");
+    JsonNode node = filter("!propA");
 
-    assertThat(filter.includes("propA")).isFalse();
-    assertThat(filter.includes("propB")).isTrue();
+    assertThat(node.has("propA")).isFalse();
+    assertThat(node.get("propB").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propB").get("key2").textValue()).isEqualTo("value2");
   }
 
   @Test
-  public void testIncludeExclude() {
-    PropertyFilter filter = filterOf("propA", "!propA");
+  public void testNestedInclude() {
+    JsonNode node = filter("propA.key1", "propB.key2");
 
-    assertThat(filter.includes("propA")).isTrue();
-    assertThat(filter.includes("propB")).isFalse();
+    assertThat(node.get("propA").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propA").has("key2")).isFalse();
+    assertThat(node.get("propB").has("key1")).isFalse();
+    assertThat(node.get("propB").get("key2").textValue()).isEqualTo("value2");
   }
 
-  private static PropertyFilter filterOf(String... properties) {
-    return new PropertyFilter(Arrays.asList(properties));
+  @Test
+  public void testNestedExclude() {
+    JsonNode node = filter("!propA.key1", "!propB.key2");
+
+    assertThat(node.get("propA").has("key1")).isFalse();
+    assertThat(node.get("propA").get("key2").textValue()).isEqualTo("value2");
+    assertThat(node.get("propB").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propB").has("key2")).isFalse();
+  }
+
+  private static JsonNode filter(String... properties) {
+    JsonNode node = node();
+
+    new PropertyFilter(Arrays.asList(properties)).filter(node);
+    return node;
+  }
+
+  private static JsonNode node() {
+    ObjectNode node = mapper.createObjectNode();
+    node.put("propA", propertyNode());
+    node.put("propB", propertyNode());
+
+    return node;
+  }
+
+  private static JsonNode propertyNode() {
+    ObjectNode node = mapper.createObjectNode();
+    node.put("key1", "value1");
+    node.put("key2", "value2");
+
+    return node;
   }
 }

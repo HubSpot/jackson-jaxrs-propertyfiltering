@@ -11,9 +11,4 @@ public class StandardTest extends AbstractIntegrationTest {
   protected String queryParamName() {
     return "property";
   }
-
-  @Override
-  protected boolean wrapped() {
-    return false;
-  }
 }

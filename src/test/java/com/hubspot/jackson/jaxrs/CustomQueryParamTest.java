@@ -11,9 +11,4 @@ public class CustomQueryParamTest extends AbstractIntegrationTest {
   protected String queryParamName() {
     return "custom";
   }
-
-  @Override
-  protected boolean wrapped() {
-    return false;
-  }
 }

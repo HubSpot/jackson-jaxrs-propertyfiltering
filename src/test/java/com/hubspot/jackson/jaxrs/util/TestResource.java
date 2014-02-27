@@ -27,20 +27,6 @@ public class TestResource {
     return getObjects();
   }
 
-  @GET
-  @Path("/wrapped")
-  @PropertyFiltering(on = "objects")
-  public TestObjectWrapper getObjectsWrapped() {
-    return new TestObjectWrapper(getObjects(), 10, true);
-  }
-
-  @GET
-  @Path("/wrapped/custom")
-  @PropertyFiltering(on = "objects", using = "custom")
-  public TestObjectWrapper getObjectsWrappedAndCustomQueryParam() {
-    return new TestObjectWrapper(getObjects(), 10, true);
-  }
-
   private static List<TestObject> getObjects() {
     List<TestObject> objects = new ArrayList<TestObject>();
     for (int i = 0; i < 10; i++) {
@@ -48,32 +34,6 @@ public class TestResource {
     }
 
     return objects;
-  }
-
-  public static class TestObjectWrapper {
-    private final List<TestObject> objects;
-    private final int count;
-    private final boolean hasMore;
-
-    public TestObjectWrapper(@JsonProperty("objects") List<TestObject> objects,
-                             @JsonProperty("count") int count,
-                             @JsonProperty("hasMore") boolean hasMore) {
-      this.objects = objects;
-      this.count = count;
-      this.hasMore = hasMore;
-    }
-
-    public List<TestObject> getObjects() {
-      return objects;
-    }
-
-    public int getCount() {
-      return count;
-    }
-
-    public boolean getHasMore() {
-      return hasMore;
-    }
   }
 
   public static class TestObject {
