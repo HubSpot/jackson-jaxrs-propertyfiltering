@@ -23,3 +23,46 @@ To use module on Maven-based projects, use following dependency:
 3. Profit
 
 Yes, it's just that simple.
+
+## Usage
+
+Let's assume you have an endpoint annotated with `@PropertyFiltering` that returns JSON of the form:
+
+```json
+{
+  "id": 54,
+  "name": "Object",
+  "child": {
+    "id": 96,
+    "name": "Child Object"
+  }
+}
+```
+
+If you just need the `id` field you can pass `?property=id` which will return:
+
+```json
+{
+  "id": 54
+}
+```
+
+Nested fields are also supported with dot-notation, so if you need the child `id` as well, you can pass `?property=id&property=child.id` which will return:
+
+```json
+{
+  "id": 54,
+  "child": {
+    "id": 96
+  }
+}
+```
+
+You can also specify fields by exclusion rather than inclusion, so if you don't need the child field but want everything else you can pass `?property=!child` which will return:
+
+```json
+{
+  "id": 54,
+  "name": "Object"
+}
+```
