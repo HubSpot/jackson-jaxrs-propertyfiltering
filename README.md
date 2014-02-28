@@ -1,6 +1,6 @@
 ## Overview
 
-Library to enable automatic filtering of JSON responses from JAX-RS endpoints. Clients specify via query params what properties they want and the library handles filtering the response entities down to just those properties. Tested with Jersey but should work with any JAX-RS implementation.
+Library to enable automatic filtering of JSON responses from JAX-RS endpoints. Clients specify via query params what properties they want and the library handles filtering the response entities down to just those properties (see [here](#usage) for some examples). Tested with Jersey but should work with any JAX-RS implementation.
 
 ## Maven dependency
 
