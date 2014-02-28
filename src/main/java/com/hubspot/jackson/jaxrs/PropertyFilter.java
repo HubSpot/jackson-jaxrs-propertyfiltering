@@ -55,7 +55,12 @@ public class PropertyFilter {
           nestedProperties.put(prefix, nestedFilter);
         }
 
-        nestedFilter.addProperty(excluded ? "!" + suffix : suffix);
+        if (excluded) {
+          nestedFilter.addProperty("!" + suffix);
+        } else {
+          nestedFilter.addProperty(suffix);
+          includedProperties.add(prefix);
+        }
       } else if (excluded) {
         excludedProperties.add(property);
       } else {
