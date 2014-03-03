@@ -1,19 +1,9 @@
 package com.hubspot.jackson.jaxrs;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
@@ -26,14 +16,13 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Object> {
-  private static final Logger logger = Logger.getLogger(PropertyFilteringMessageBodyWriter.class.getName());
-  private static final JacksonJsonProvider defaultProvider = new JacksonJsonProvider();
-
-  private final ExecutorService writeExecutor = Executors.newCachedThreadPool();
 
   @Context
   Application application;
@@ -41,11 +30,13 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   @Context
   UriInfo uriInfo;
 
+  private volatile JacksonJsonProvider delegate;
+
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
     return isJsonType(mediaType) &&
            filteringEnabled(annotations) &&
-           findJsonProvider().isWriteable(type, genericType, annotations, mediaType);
+           getJsonProvider().isWriteable(type, genericType, annotations, mediaType);
   }
 
   @Override
@@ -64,80 +55,42 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
       return;
     }
 
-    JsonNode tree = toTree(o, type, genericType, annotations, mediaType, httpHeaders);
-    propertyFilter.filter(tree);
-
-    write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
-  }
-
-  private JsonNode toTree(final Object o, final Class<?> type, final Type genericType,
-                          final Annotation[] annotations, final MediaType mediaType,
-                          final MultivaluedMap<String, Object> httpHeaders) throws IOException {
-    PipedInputStream in = new PipedInputStream();
-    final PipedOutputStream out = new PipedOutputStream(in);
-    Future<IOException> writeFuture = writeExecutor.submit(new Callable<IOException>() {
-
-      @Override
-      public IOException call() throws Exception {
-        try {
-          write(o, type, genericType, annotations, mediaType, httpHeaders, out);
-          return null;
-        } catch (IOException e) {
-          return e;
-        } finally {
-          closeQuietly(out);
-        }
-      }
-    });
+    Timer timer = Metrics.defaultRegistry().newTimer(PropertyFilteringMessageBodyWriter.class, "filter");
+    TimerContext context = timer.time();
 
     try {
-      return findJsonProvider().locateMapper(type, mediaType).readTree(in);
-    } catch (IOException e) {
-      throwWriteExceptionIfPresent(writeFuture);
-      throw e;
+      JsonNode tree = getJsonProvider().locateMapper(type, mediaType).valueToTree(o);
+      propertyFilter.filter(tree);
+      write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
     } finally {
-      closeQuietly(in);
+      context.stop();
     }
   }
 
   private void write(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                      MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
-    findJsonProvider().writeTo(o, type, genericType, annotations, mediaType, httpHeaders, os);
+    getJsonProvider().writeTo(o, type, genericType, annotations, mediaType, httpHeaders, os);
   }
 
-  private JacksonJsonProvider findJsonProvider() {
-    for (Object o : application.getSingletons()) {
-      if (o instanceof JacksonJsonProvider) {
-        return (JacksonJsonProvider) o;
-      }
+  private JacksonJsonProvider getJsonProvider() {
+    if (delegate != null) {
+      return delegate;
     }
 
-    return defaultProvider;
-  }
-
-  private void closeQuietly(Closeable closeable) {
-    try {
-      closeable.close();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Error closing " + closeable, e);
-    }
-  }
-
-  private static void throwWriteExceptionIfPresent(Future<IOException> future) throws IOException {
-    try {
-      IOException exception = future.get();
-      if (exception != null) {
-        throw exception;
+    synchronized (this) {
+      if (delegate != null) {
+        return delegate;
       }
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    } catch (ExecutionException e) {
-      Throwable cause = e.getCause();
-      if (cause instanceof RuntimeException) {
-        throw (RuntimeException) cause;
-      } else {
-        throw new RuntimeException(cause);
+
+      for (Object o : application.getSingletons()) {
+        if (o instanceof JacksonJsonProvider) {
+          delegate = (JacksonJsonProvider) o;
+          return delegate;
+        }
       }
+
+      delegate = new JacksonJsonProvider();
+      return delegate;
     }
   }
 
