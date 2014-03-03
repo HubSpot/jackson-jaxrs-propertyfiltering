@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
@@ -14,11 +15,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.servlets.MetricsServlet;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,6 +31,9 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
 
   @Context
   UriInfo uriInfo;
+
+  @Context
+  ServletContext servletContext;
 
   private volatile JacksonJsonProvider delegate;
 
@@ -55,8 +60,8 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
       return;
     }
 
-    Timer timer = Metrics.defaultRegistry().newTimer(PropertyFilteringMessageBodyWriter.class, "filter");
-    TimerContext context = timer.time();
+    Timer timer = getTimer();
+    Timer.Context context = timer.time();
 
     try {
       JsonNode tree = getJsonProvider().locateMapper(type, mediaType).valueToTree(o);
@@ -70,6 +75,20 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   private void write(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                      MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     getJsonProvider().writeTo(o, type, genericType, annotations, mediaType, httpHeaders, os);
+  }
+
+  private Timer getTimer() {
+    return getMetricRegistry().timer(MetricRegistry.name(PropertyFilteringMessageBodyWriter.class, "filter"));
+  }
+
+  private MetricRegistry getMetricRegistry() {
+    MetricRegistry registry = (MetricRegistry) servletContext.getAttribute(MetricsServlet.METRICS_REGISTRY);
+
+    if (registry == null) {
+      registry = SharedMetricRegistries.getOrCreate("com.hubspot");
+    }
+
+    return registry;
   }
 
   private JacksonJsonProvider getJsonProvider() {
