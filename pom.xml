@@ -18,7 +18,7 @@
 
     <groupId>com.hubspot.jackson</groupId>
     <artifactId>jackson-jaxrs-propertyfiltering</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
     <name>JAX-RS Property Filtering Support</name>
     <description>JAX-RS MessageBodyWriter that supports filtering via query parameters</description>
     <url>https://github.com/HubSpot/jackson-jaxrs-propertyfiltering</url>
