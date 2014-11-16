@@ -18,9 +18,18 @@ public class PropertyFilter {
     if (properties != null) {
       for (String property : properties) {
         property = property.trim();
-
         if (!property.isEmpty()) {
-          filter.addProperty(property);
+          if (property.contains(",")) {
+            String[] commaProperties = property.split(",");
+            for (String commaProperty : commaProperties) {
+              commaProperty = commaProperty.trim();
+              if (!commaProperty.isEmpty()) {
+                filter.addProperty(commaProperty);
+              }
+            }
+          }else {
+            filter.addProperty(property);
+          }
         }
       }
     }
