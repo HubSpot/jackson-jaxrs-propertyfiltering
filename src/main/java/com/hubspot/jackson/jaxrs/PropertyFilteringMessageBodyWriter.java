@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
@@ -54,7 +57,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
 
-    PropertyFilter propertyFilter = new PropertyFilter(uriInfo.getQueryParameters().get(annotation.using()));
+    PropertyFilter propertyFilter = new PropertyFilter(getProperties(annotation.using()));
     if (!propertyFilter.hasFilters()) {
       write(o, type, genericType, annotations, mediaType, httpHeaders, os);
       return;
@@ -70,6 +73,25 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     } finally {
       context.stop();
     }
+  }
+
+  private Collection<String> getProperties(String name) {
+    List<String> values = uriInfo.getQueryParameters().get(name);
+
+    List<String> properties = new ArrayList<String>();
+    if (values != null) {
+      for (String value : values) {
+        String[] parts = value.split(",");
+        for (String part : parts) {
+          part = part.trim();
+          if (!part.isEmpty()) {
+            properties.add(part);
+          }
+        }
+      }
+    }
+
+    return properties;
   }
 
   private void write(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
