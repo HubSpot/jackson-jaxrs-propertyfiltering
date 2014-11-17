@@ -15,13 +15,9 @@ public class PropertyFilter {
   private final NestedPropertyFilter filter = new NestedPropertyFilter();
 
   public PropertyFilter(Collection<String> properties) {
-    if (properties != null) {
-      for (String property : properties) {
-        property = property.trim();
-
-        if (!property.isEmpty()) {
-          filter.addProperty(property);
-        }
+    for (String property : properties) {
+      if (!property.isEmpty()) {
+        filter.addProperty(property);
       }
     }
   }

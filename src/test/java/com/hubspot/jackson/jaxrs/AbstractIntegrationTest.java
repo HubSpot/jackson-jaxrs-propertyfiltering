@@ -78,6 +78,14 @@ public abstract class AbstractIntegrationTest {
     assertNameNotPresent(objects);
   }
 
+  @Test
+  public void testCommaSeparated() throws IOException {
+    List<TestObject> objects = getObjects("id,name");
+
+    assertIdPresent(objects);
+    assertNamePresent(objects);
+  }
+
   protected abstract String path();
   protected abstract String queryParamName();
 
