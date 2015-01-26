@@ -119,6 +119,26 @@ public class PropertyFilterTest {
     assertThat(node.get("child").get("name").textValue()).isEqualTo("Child Object");
   }
 
+  @Test
+  public void testMixedInclusion() throws Exception {
+    String json = "{" +
+        "  \"propA\": {" +
+        "    \"key1\": \"value1\"," +
+        "    \"key2\": \"value2\"" +
+        "  }," +
+        "  \"propB\": {" +
+        "    \"key1\": \"value1\"," +
+        "    \"key2\": \"value2\"" +
+        "  }" +
+        "}";
+    JsonNode node = filter(mapper.readTree(json), "propA.key1", "*.key2");
+
+    assertThat(node.get("propA").get("key1").textValue()).isEqualTo("value1");
+    assertThat(node.get("propA").get("key2").textValue()).isEqualTo("value2");
+    assertThat(node.get("propB").has("key1")).isFalse();
+    assertThat(node.get("propB").get("key2").textValue()).isEqualTo("value2");
+  }
+
   private static JsonNode filter(String... properties) {
     return filter(node(), properties);
   }
