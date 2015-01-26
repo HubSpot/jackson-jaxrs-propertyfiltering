@@ -67,3 +67,27 @@ You can also specify fields by exclusion rather than inclusion, so if you don't 
   "name": "Object"
 }
 ```
+
+Wildcards match any single level of nesting for inclusion and exclusion, so passing `?property=*.id` will return:
+
+```json
+{
+  "id": 54,
+  "name": "Object",
+  "child": {
+    "id": 96
+  }
+}
+```
+
+and passing `?property=!*.id` will return:
+
+```json
+{
+  "id": 54,
+  "name": "Object",
+  "child": {
+    "name": "Child Object"
+  }
+}
+```

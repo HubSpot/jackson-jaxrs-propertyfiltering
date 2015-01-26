@@ -1,6 +1,7 @@
 package com.hubspot.jackson.jaxrs;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,7 +31,14 @@ public class PropertyFilter {
     filter.filter(node);
   }
 
+  @Override
+  public String toString() {
+    return "PropertyFilter[" + filter + "]";
+  }
+
   private static class NestedPropertyFilter {
+    private static final String WILDCARD = "*";
+
     private final Set<String> includedProperties = new HashSet<String>();
     private final Set<String> excludedProperties = new HashSet<String>();
     private final Map<String, NestedPropertyFilter> nestedProperties = new HashMap<String, NestedPropertyFilter>();
@@ -41,9 +49,10 @@ public class PropertyFilter {
         property = property.substring(1);
       }
 
-      if (property.contains(".")) {
-        String prefix = property.substring(0, property.indexOf('.'));
-        String suffix = property.substring(property.indexOf('.') + 1);
+      int indexOfDot = property.indexOf('.');
+      if (indexOfDot > -1) {
+        String prefix = property.substring(0, indexOfDot);
+        String suffix = property.substring(indexOfDot + 1);
 
         NestedPropertyFilter nestedFilter = nestedProperties.get(prefix);
         if (nestedFilter == null) {
@@ -83,19 +92,38 @@ public class PropertyFilter {
     }
 
     private void filter(ObjectNode object) {
-      if (!includedProperties.isEmpty()) {
+      if (!includedProperties.isEmpty() && !includedProperties.contains(WILDCARD)) {
         object.retain(includedProperties);
       }
 
-      object.remove(excludedProperties);
+      if (excludedProperties.contains(WILDCARD)) {
+        object.removeAll();
+      } else {
+        object.remove(excludedProperties);
+      }
 
       for (Entry<String, NestedPropertyFilter> entry : nestedProperties.entrySet()) {
-        JsonNode node = object.get(entry.getKey());
+        Iterable<JsonNode> nodes;
 
-        if (node != null) {
-          entry.getValue().filter(node);
+        if (WILDCARD.equals(entry.getKey())) {
+          nodes = object;
+        } else {
+          nodes = Collections.singletonList(object.get(entry.getKey()));
+        }
+
+        for (JsonNode node : nodes) {
+          if (node != null) {
+            entry.getValue().filter(node);
+          }
         }
       }
+    }
+
+    @Override
+    public String toString() {
+      return "included: " + includedProperties
+          + " excluded: " + excludedProperties
+          + " nested: " + nestedProperties;
     }
   }
 }
