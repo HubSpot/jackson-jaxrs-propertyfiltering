@@ -103,7 +103,7 @@ public class PropertyFilter {
       }
 
       for (Entry<String, NestedPropertyFilter> entry : nestedProperties.entrySet()) {
-        Iterable<JsonNode> nodes;
+        final Iterable<JsonNode> nodes;
 
         if (WILDCARD.equals(entry.getKey())) {
           nodes = object;
