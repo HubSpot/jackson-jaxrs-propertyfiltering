@@ -29,9 +29,9 @@ public class TestResource {
   }
 
   @GET
-  @Path("/default")
+  @Path("/always")
   @PropertyFiltering(always = {"id"})
-  public List<TestObject> getObjectsDefaultProperties() {
+  public List<TestObject> getObjectsAlwaysProperties() {
     return getObjects();
   }
 

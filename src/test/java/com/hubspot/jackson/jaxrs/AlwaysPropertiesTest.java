@@ -5,11 +5,11 @@ import java.util.List;
 
 import static com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
 
-public class DefaultPropertiesTest extends AbstractIntegrationTest {
+public class AlwaysPropertiesTest extends AbstractIntegrationTest {
 
   @Override
   protected String path() {
-    return "/default";
+    return "/always";
   }
 
   @Override
