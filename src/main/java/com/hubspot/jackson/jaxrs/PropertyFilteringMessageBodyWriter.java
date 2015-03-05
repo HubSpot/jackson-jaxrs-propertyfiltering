@@ -58,8 +58,8 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
 
-    Collection<String> properties = getQueryProperties(annotation.using());
-    properties.addAll(getDefaultProperties(annotation.defaultProperties()));
+    Collection<String> properties = getProperties(annotation.using());
+    properties.addAll(Arrays.asList(annotation.defaultProperties()));
 
     PropertyFilter propertyFilter = new PropertyFilter(properties);
     if (!propertyFilter.hasFilters()) {
@@ -80,17 +80,9 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   }
 
 
-  private Collection<String> getQueryProperties(String name) {
-    return getProperties(uriInfo.getQueryParameters().get(name));
-  }
+  private Collection<String> getProperties(String name) {
+    List<String> values = uriInfo.getQueryParameters().get(name);
 
-
-  private Collection<String> getDefaultProperties(String[] values) {
-    return getProperties(Arrays.asList(values));
-  }
-
-
-  private Collection<String> getProperties(List<String> values) {
     List<String> properties = new ArrayList<String>();
     if (values != null) {
       for (String value : values) {
