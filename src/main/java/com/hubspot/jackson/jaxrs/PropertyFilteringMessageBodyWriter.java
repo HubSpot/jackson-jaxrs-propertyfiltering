@@ -1,10 +1,18 @@
 package com.hubspot.jackson.jaxrs;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.servlets.MetricsServlet;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,13 +25,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +58,10 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
 
-    PropertyFilter propertyFilter = new PropertyFilter(getProperties(annotation.using()));
+    Collection<String> properties = getProperties(annotation.using());
+    properties.addAll(Arrays.asList(annotation.always()));
+
+    PropertyFilter propertyFilter = new PropertyFilter(properties);
     if (!propertyFilter.hasFilters()) {
       write(o, type, genericType, annotations, mediaType, httpHeaders, os);
       return;
@@ -74,6 +78,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
       context.stop();
     }
   }
+
 
   private Collection<String> getProperties(String name) {
     List<String> values = uriInfo.getQueryParameters().get(name);

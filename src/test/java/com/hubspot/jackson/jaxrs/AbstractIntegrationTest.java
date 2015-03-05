@@ -89,7 +89,7 @@ public abstract class AbstractIntegrationTest {
   protected abstract String path();
   protected abstract String queryParamName();
 
-  private List<TestObject> getObjects(String... queryParams) throws IOException {
+  protected List<TestObject> getObjects(String... queryParams) throws IOException {
     String urlString = "http://localhost:" + port + "/test" + path();
     if (queryParams.length > 0) {
       urlString += "?" + queryParamName() +"=" + Strings.join(queryParams).with("&" + queryParamName() + "=");
@@ -100,28 +100,28 @@ public abstract class AbstractIntegrationTest {
     return reader.withType(listType).readValue(url.openStream());
   }
 
-  private static void assertIdPresent(List<TestObject> objects) {
+  protected static void assertIdPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getId()).isEqualTo(i);
     }
   }
 
-  private static void assertNamePresent(List<TestObject> objects) {
+  protected static void assertNamePresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getName()).isEqualTo("Test " + i);
     }
   }
 
-  private static void assertIdNotPresent(List<TestObject> objects) {
+  protected static void assertIdNotPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getId()).isNull();
     }
   }
 
-  private static void assertNameNotPresent(List<TestObject> objects) {
+  protected static void assertNameNotPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getName()).isNull();
