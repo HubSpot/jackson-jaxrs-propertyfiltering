@@ -30,7 +30,7 @@ public class TestResource {
 
   @GET
   @Path("/default")
-  @PropertyFiltering(defaultProperties = {"id"})
+  @PropertyFiltering(always = {"id"})
   public List<TestObject> getObjectsDefaultProperties() {
     return getObjects();
   }

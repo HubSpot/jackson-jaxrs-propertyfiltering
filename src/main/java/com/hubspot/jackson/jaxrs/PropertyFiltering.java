@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PropertyFiltering {
   String using() default "property";
-  String[] defaultProperties() default {};
+  String[] always() default {};
 }
