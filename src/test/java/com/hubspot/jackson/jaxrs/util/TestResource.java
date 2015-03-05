@@ -3,12 +3,13 @@ package com.hubspot.jackson.jaxrs.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.List;
 
 @Path("/test")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,6 +25,13 @@ public class TestResource {
   @Path("/custom")
   @PropertyFiltering(using = "custom")
   public List<TestObject> getObjectsCustomQueryParam() {
+    return getObjects();
+  }
+
+  @GET
+  @Path("/default")
+  @PropertyFiltering(defaultProperties = {"id"})
+  public List<TestObject> getObjectsDefaultProperties() {
     return getObjects();
   }
 

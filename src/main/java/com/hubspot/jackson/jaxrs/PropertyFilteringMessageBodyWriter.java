@@ -1,10 +1,18 @@
 package com.hubspot.jackson.jaxrs;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.servlets.MetricsServlet;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,13 +25,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +58,10 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
 
-    PropertyFilter propertyFilter = new PropertyFilter(getProperties(annotation.using()));
+    Collection<String> properties = getQueryProperties(annotation.using());
+    properties.addAll(getDefaultProperties(annotation.defaultProperties()));
+
+    PropertyFilter propertyFilter = new PropertyFilter(properties);
     if (!propertyFilter.hasFilters()) {
       write(o, type, genericType, annotations, mediaType, httpHeaders, os);
       return;
@@ -75,9 +79,18 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
   }
 
-  private Collection<String> getProperties(String name) {
-    List<String> values = uriInfo.getQueryParameters().get(name);
 
+  private Collection<String> getQueryProperties(String name) {
+    return getProperties(uriInfo.getQueryParameters().get(name));
+  }
+
+
+  private Collection<String> getDefaultProperties(String[] values) {
+    return getProperties(Arrays.asList(values));
+  }
+
+
+  private Collection<String> getProperties(List<String> values) {
     List<String> properties = new ArrayList<String>();
     if (values != null) {
       for (String value : values) {
