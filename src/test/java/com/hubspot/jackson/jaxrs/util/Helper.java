@@ -7,6 +7,7 @@ import javax.ws.rs.core.Application;
 
 import com.hubspot.jackson.jaxrs.PropertyFilteringMessageBodyWriter;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -35,7 +36,7 @@ public enum Helper {
   }
 
   public int getPort(Server server) {
-    return server.getConnectors()[0].getLocalPort();
+    return ((NetworkConnector) server.getConnectors()[0]).getLocalPort();
   }
 
   public static class TestApplication extends Application {

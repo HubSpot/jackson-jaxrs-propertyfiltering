@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.hubspot.jackson.jaxrs.util.Helper;
 import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
+import org.assertj.core.util.Strings;
 import org.eclipse.jetty.server.Server;
-import org.fest.util.Strings;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractIntegrationTest {
   private static ObjectReader reader;
