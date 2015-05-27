@@ -27,6 +27,10 @@
         </developer>
     </developers>
 
+    <properties>
+        <dep.jersey.version>1.19</dep.jersey.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
