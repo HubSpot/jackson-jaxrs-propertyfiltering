@@ -1,6 +1,7 @@
 package com.hubspot.jackson.jaxrs.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
 import java.util.ArrayList;
@@ -35,6 +36,14 @@ public class TestResource {
     return getObjects();
   }
 
+  @GET
+  @Path("/view")
+  @PropertyFiltering
+  @JsonView(TestView.class)
+  public List<TestObject> getObjectsWithView() {
+    return getObjects();
+  }
+
   private static List<TestObject> getObjects() {
     List<TestObject> objects = new ArrayList<TestObject>();
     for (int i = 0; i < 10; i++) {
@@ -44,8 +53,12 @@ public class TestResource {
     return objects;
   }
 
+  public interface TestView {}
+  public interface OtherView {}
+
   public static class TestObject {
     private final Long id;
+    @JsonView(OtherView.class)
     private final String name;
 
     public TestObject(@JsonProperty("id") Long id, @JsonProperty("name") String name) {

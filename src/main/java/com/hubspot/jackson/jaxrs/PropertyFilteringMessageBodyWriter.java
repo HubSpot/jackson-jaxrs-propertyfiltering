@@ -4,8 +4,13 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.servlets.MetricsServlet;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,7 +76,9 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     Timer.Context context = timer.time();
 
     try {
-      JsonNode tree = getJsonProvider().locateMapper(type, mediaType).valueToTree(o);
+      ObjectMapper mapper = getJsonProvider().locateMapper(type, mediaType);
+      ObjectWriter writer = JsonEndpointConfig.forWriting(mapper.writer(), annotations, null).getWriter();
+      JsonNode tree = valueToTree(mapper, writer, o);
       propertyFilter.filter(tree);
       write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
     } finally {
@@ -79,6 +86,24 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
   }
 
+  private JsonNode valueToTree(ObjectMapper mapper, ObjectWriter writer, Object o) {
+    if (o == null) {
+      return null;
+    }
+
+    TokenBuffer buf = new TokenBuffer(mapper, false);
+    JsonNode result;
+    try {
+      writer.writeValue(buf, o);
+      JsonParser jp = buf.asParser();
+      result = mapper.readTree(jp);
+      jp.close();
+    } catch (IOException e) { // should not occur, no real i/o...
+      throw new IllegalArgumentException(e.getMessage(), e);
+    }
+
+    return result;
+  }
 
   private Collection<String> getProperties(String name) {
     List<String> values = uriInfo.getQueryParameters().get(name);

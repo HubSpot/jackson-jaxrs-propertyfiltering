@@ -100,28 +100,28 @@ public abstract class AbstractIntegrationTest {
     return reader.withType(listType).readValue(url.openStream());
   }
 
-  protected static void assertIdPresent(List<TestObject> objects) {
+  protected void assertIdPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getId()).isEqualTo(i);
     }
   }
 
-  protected static void assertNamePresent(List<TestObject> objects) {
+  protected void assertNamePresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getName()).isEqualTo("Test " + i);
     }
   }
 
-  protected static void assertIdNotPresent(List<TestObject> objects) {
+  protected void assertIdNotPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getId()).isNull();
     }
   }
 
-  protected static void assertNameNotPresent(List<TestObject> objects) {
+  protected void assertNameNotPresent(List<TestObject> objects) {
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
       assertThat(objects.get(i).getName()).isNull();
