@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
@@ -45,6 +46,9 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   ServletContext servletContext;
 
   private volatile JacksonJsonProvider delegate;
+
+  @Inject
+  public PropertyFilteringMessageBodyWriter() {}
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
