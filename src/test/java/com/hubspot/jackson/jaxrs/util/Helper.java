@@ -6,12 +6,12 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import com.hubspot.jackson.jaxrs.PropertyFilteringMessageBodyWriter;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 /**
  * Adapted from Jackson source, credit to Tatu Saloranta

@@ -97,7 +97,7 @@ public abstract class AbstractIntegrationTest {
 
     URL url = new URL(urlString);
 
-    return reader.withType(listType).readValue(url.openStream());
+    return reader.forType(listType).readValue(url.openStream());
   }
 
   protected void assertIdPresent(List<TestObject> objects) {

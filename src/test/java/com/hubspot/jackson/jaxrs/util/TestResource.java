@@ -31,7 +31,7 @@ public class TestResource {
 
   @GET
   @Path("/always")
-  @PropertyFiltering(always = {"id"})
+  @PropertyFiltering(always = "id")
   public List<TestObject> getObjectsAlwaysProperties() {
     return getObjects();
   }
