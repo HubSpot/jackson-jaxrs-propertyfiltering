@@ -63,10 +63,13 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
 
-    Collection<String> properties = getProperties(annotation.using());
-    properties.addAll(Arrays.asList(annotation.always()));
+    Collection<String> properties = new ArrayList<>();
+    if (annotation != null) {
+      properties.addAll(getProperties(annotation.using()));
+      properties.addAll(Arrays.asList(annotation.always()));
+    }
 
-    PropertyFilter propertyFilter = new PropertyFilter(properties);
+    PropertyFilter propertyFilter = createPropertyFilter(properties, o, type, genericType, annotations, httpHeaders);
     if (!propertyFilter.hasFilters()) {
       write(o, type, genericType, annotations, mediaType, httpHeaders, os);
       return;
@@ -83,6 +86,71 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
       write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
     } finally {
       context.stop();
+    }
+  }
+
+  protected Collection<String> getProperties(String name) {
+    List<String> values = uriInfo.getQueryParameters().get(name);
+
+    List<String> properties = new ArrayList<>();
+    if (values != null) {
+      for (String value : values) {
+        String[] parts = value.split(",");
+        for (String part : parts) {
+          part = part.trim();
+          if (!part.isEmpty()) {
+            properties.add(part);
+          }
+        }
+      }
+    }
+
+    return properties;
+  }
+
+  protected PropertyFilter createPropertyFilter(Collection<String> properties, Object o, Class<?> type,
+                                                Type genericType, Annotation[] annotations,
+                                                MultivaluedMap<String, Object> httpHeaders) {
+    return new PropertyFilter(properties);
+  }
+
+  protected Timer getTimer() {
+    return getMetricRegistry().timer(MetricRegistry.name(PropertyFilteringMessageBodyWriter.class, "filter"));
+  }
+
+  protected MetricRegistry getMetricRegistry() {
+    MetricRegistry registry = (MetricRegistry) servletContext.getAttribute(MetricsServlet.METRICS_REGISTRY);
+
+    if (registry == null) {
+      registry = SharedMetricRegistries.getOrCreate("com.hubspot");
+    }
+
+    return registry;
+  }
+
+  protected boolean filteringEnabled(Annotation... annotations) {
+    return findPropertyFiltering(annotations) != null;
+  }
+
+  protected JacksonJsonProvider getJsonProvider() {
+    if (delegate != null) {
+      return delegate;
+    }
+
+    synchronized (this) {
+      if (delegate != null) {
+        return delegate;
+      }
+
+      for (Object o : application.getSingletons()) {
+        if (o instanceof JacksonJsonProvider) {
+          delegate = (JacksonJsonProvider) o;
+          return delegate;
+        }
+      }
+
+      delegate = new JacksonJsonProvider();
+      return delegate;
     }
   }
 
@@ -105,73 +173,14 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     return result;
   }
 
-  private Collection<String> getProperties(String name) {
-    List<String> values = uriInfo.getQueryParameters().get(name);
-
-    List<String> properties = new ArrayList<String>();
-    if (values != null) {
-      for (String value : values) {
-        String[] parts = value.split(",");
-        for (String part : parts) {
-          part = part.trim();
-          if (!part.isEmpty()) {
-            properties.add(part);
-          }
-        }
-      }
-    }
-
-    return properties;
-  }
-
   private void write(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                      MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     getJsonProvider().writeTo(o, type, genericType, annotations, mediaType, httpHeaders, os);
   }
 
-  private Timer getTimer() {
-    return getMetricRegistry().timer(MetricRegistry.name(PropertyFilteringMessageBodyWriter.class, "filter"));
-  }
-
-  private MetricRegistry getMetricRegistry() {
-    MetricRegistry registry = (MetricRegistry) servletContext.getAttribute(MetricsServlet.METRICS_REGISTRY);
-
-    if (registry == null) {
-      registry = SharedMetricRegistries.getOrCreate("com.hubspot");
-    }
-
-    return registry;
-  }
-
-  private JacksonJsonProvider getJsonProvider() {
-    if (delegate != null) {
-      return delegate;
-    }
-
-    synchronized (this) {
-      if (delegate != null) {
-        return delegate;
-      }
-
-      for (Object o : application.getSingletons()) {
-        if (o instanceof JacksonJsonProvider) {
-          delegate = (JacksonJsonProvider) o;
-          return delegate;
-        }
-      }
-
-      delegate = new JacksonJsonProvider();
-      return delegate;
-    }
-  }
-
   private static boolean isJsonType(MediaType mediaType) {
     return MediaType.APPLICATION_JSON_TYPE.getType().equals(mediaType.getType()) &&
             MediaType.APPLICATION_JSON_TYPE.getSubtype().equals(mediaType.getSubtype());
-  }
-
-  private static boolean filteringEnabled(Annotation... annotations) {
-    return findPropertyFiltering(annotations) != null;
   }
 
   private static PropertyFiltering findPropertyFiltering(Annotation... annotations) {
