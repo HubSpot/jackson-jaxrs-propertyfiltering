@@ -49,7 +49,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
     return isJsonType(mediaType) &&
-           filteringEnabled(annotations) &&
+           filteringEnabled(type, genericType, annotations, mediaType) &&
            getJsonProvider().isWriteable(type, genericType, annotations, mediaType);
   }
 
@@ -128,7 +128,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     return registry;
   }
 
-  protected boolean filteringEnabled(Annotation... annotations) {
+  protected boolean filteringEnabled(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
     return findPropertyFiltering(annotations) != null;
   }
 
