@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,6 +51,17 @@ public class TestResource {
   @PropertyFiltering
   public List<TestNestedObject> getNestedObjectsList() {
     return getNestedObjects();
+  }
+
+  @GET
+  @Path("/nested/object")
+  @PropertyFiltering
+  public Map<Long, TestObject> getNestedObjectsMap() {
+    Map<Long, TestObject> result = new HashMap<>();
+    for (TestObject testNestedObject : getObjects()) {
+      result.put(testNestedObject.getId(), testNestedObject);
+    }
+    return result;
   }
 
   private static List<TestObject> getObjects() {

@@ -3,6 +3,7 @@ package com.hubspot.jackson.jaxrs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -76,6 +77,12 @@ public class PropertyFilter {
       }
     }
 
+    private void filter(Iterator<JsonNode> nodes) {
+      while (nodes.hasNext()) {
+        filter(nodes.next());
+      }
+    }
+
     private void filter(ArrayNode array) {
       for (JsonNode node : array) {
         filter(node);
@@ -83,17 +90,21 @@ public class PropertyFilter {
     }
 
     private void filter(ObjectNode object) {
-      if (!includedProperties.isEmpty()) {
+      if (!includedProperties.isEmpty() && !includedProperties.contains("*")) {
         object.retain(includedProperties);
       }
 
       object.remove(excludedProperties);
 
       for (Entry<String, NestedPropertyFilter> entry : nestedProperties.entrySet()) {
-        JsonNode node = object.get(entry.getKey());
+        if (entry.getKey().equals("*")) {
+          entry.getValue().filter(object.elements());
+        } else {
+          JsonNode node = object.get(entry.getKey());
 
-        if (node != null) {
-          entry.getValue().filter(node);
+          if (node != null) {
+            entry.getValue().filter(node);
+          }
         }
       }
     }
