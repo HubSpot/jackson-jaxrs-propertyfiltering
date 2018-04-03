@@ -44,10 +44,26 @@ public class TestResource {
     return getObjects();
   }
 
+  @GET
+  @Path("/nested/list")
+  @PropertyFiltering
+  public List<TestNestedObject> getNestedObjectsList() {
+    return getNestedObjects();
+  }
+
   private static List<TestObject> getObjects() {
-    List<TestObject> objects = new ArrayList<TestObject>();
+    List<TestObject> objects = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       objects.add(new TestObject((long) i, "Test " + i));
+    }
+
+    return objects;
+  }
+
+  private static List<TestNestedObject> getNestedObjects() {
+    List<TestNestedObject> objects = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      objects.add(new TestNestedObject((long) i * 100, "Test" + i * 100, new TestObject((long) i, "Test " + i)));
     }
 
     return objects;
@@ -72,6 +88,19 @@ public class TestResource {
 
     public String getName() {
       return name;
+    }
+  }
+
+  public static class TestNestedObject extends TestObject {
+    private final TestObject nested;
+
+    public TestNestedObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") TestObject nested) {
+      super(id, name);
+      this.nested = nested;
+    }
+
+    public TestObject getNested() {
+      return nested;
     }
   }
 }
