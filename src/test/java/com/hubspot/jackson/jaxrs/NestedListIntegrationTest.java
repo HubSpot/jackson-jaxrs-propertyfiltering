@@ -27,4 +27,15 @@ public class NestedListIntegrationTest extends BaseTest {
       assertThat(objects.get(i).getNested().getId()).isNull();
     }
   }
+
+  @Test
+  public void testNestedObjectWithExclusion() throws IOException {
+    List<TestNestedObject> objects = getObjects(listNestedType, "/nested/list", "property", "!nested.id");
+
+    assertThat(objects).hasSize(10);
+    for (int i = 0; i < 10; i++) {
+      assertThat(objects.get(i).getNested().getName()).isEqualTo("Test " + i);
+      assertThat(objects.get(i).getNested().getId()).isNull();
+    }
+  }
 }
