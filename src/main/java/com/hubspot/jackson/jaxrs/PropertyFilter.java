@@ -21,6 +21,22 @@ public class PropertyFilter {
         filter.addProperty(property);
       }
     }
+
+    applyWildcardsToNamedProperties(filter);
+  }
+
+  private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
+    if (root.nestedProperties.containsKey("*")) {
+      NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
+
+      for (Entry<String, NestedPropertyFilter> wildcardSibling : root.nestedProperties.entrySet()) {
+        wildcardSibling.getValue().mergeFilters(wildcardFilters);
+      }
+    } else {
+      for (NestedPropertyFilter child : root.nestedProperties.values()) {
+        applyWildcardsToNamedProperties(child);
+      }
+    }
   }
 
   public boolean hasFilters() {
@@ -65,6 +81,11 @@ public class PropertyFilter {
       }
     }
 
+    public void mergeFilters(NestedPropertyFilter other) {
+      includedProperties.addAll(other.includedProperties);
+      excludedProperties.addAll(other.excludedProperties);
+    }
+
     public boolean hasFilters() {
       return !(includedProperties.isEmpty() && excludedProperties.isEmpty() && nestedProperties.isEmpty());
     }
@@ -74,12 +95,6 @@ public class PropertyFilter {
         filter((ObjectNode) node);
       } else if (node.isArray()) {
         filter((ArrayNode) node);
-      }
-    }
-
-    private void filter(Iterator<JsonNode> nodes) {
-      while (nodes.hasNext()) {
-        filter(nodes.next());
       }
     }
 
@@ -96,15 +111,14 @@ public class PropertyFilter {
 
       object.remove(excludedProperties);
 
-      for (Entry<String, NestedPropertyFilter> entry : nestedProperties.entrySet()) {
-        if (entry.getKey().equals("*")) {
-          entry.getValue().filter(object.elements());
-        } else {
-          JsonNode node = object.get(entry.getKey());
+      Iterator<Entry<String, JsonNode>> fields = object.fields();
+      while (fields.hasNext()) {
+        Entry<String, JsonNode> field = fields.next();
 
-          if (node != null) {
-            entry.getValue().filter(node);
-          }
+        if (nestedProperties.containsKey(field.getKey())) {
+          nestedProperties.get(field.getKey()).filter(field.getValue());
+        } else if (nestedProperties.containsKey("*")) {
+          nestedProperties.get("*").filter(field.getValue());
         }
       }
     }
