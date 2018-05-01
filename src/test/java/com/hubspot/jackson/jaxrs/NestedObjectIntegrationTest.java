@@ -12,7 +12,7 @@ import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
 
 public class NestedObjectIntegrationTest extends BaseTest {
 
-  private static TypeReference<Map<Long, TestObject>> mapNestedType = new TypeReference<Map<Long, TestObject>>() { };
+  private static TypeReference<Map<Long, TestObject>> mapNestedType = new TypeReference<Map<Long, TestObject>>() {};
 
   @Test
   public void testNestedObject() throws IOException {

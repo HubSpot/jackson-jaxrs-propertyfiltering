@@ -9,9 +9,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public abstract class AbstractIntegrationTest extends BaseTest {
-  private static TypeReference<List<TestObject>> listType = new TypeReference<List<TestObject>>() { };
+  private static TypeReference<List<TestObject>> listType = new TypeReference<List<TestObject>>() {};
 
   @Test
   public void testNoFiltering() throws IOException {

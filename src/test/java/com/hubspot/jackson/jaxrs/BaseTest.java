@@ -16,7 +16,6 @@ import com.hubspot.jackson.jaxrs.util.Helper;
 public abstract class BaseTest {
 
   private static ObjectReader reader = new ObjectMapper().reader();
-
   private static Server server;
   private static int port;
 
@@ -36,7 +35,7 @@ public abstract class BaseTest {
   protected <T> T getObjects(TypeReference<T> typeReference, String path, String queryParamName, String... queryParams) throws IOException {
     String urlString = "http://localhost:" + port + "/test" + path;
     if (queryParams.length > 0) {
-      urlString += "?" + queryParamName +"=" + Strings.join(queryParams).with("&" + queryParamName + "=");
+      urlString += "?" + queryParamName + "=" + Strings.join(queryParams).with("&" + queryParamName + "=");
     }
 
     URL url = new URL(urlString);

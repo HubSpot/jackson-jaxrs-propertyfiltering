@@ -12,7 +12,7 @@ import com.hubspot.jackson.jaxrs.util.TestResource.TestNestedObject;
 
 public class NestedListIntegrationTest extends BaseTest {
 
-  private static TypeReference<List<TestNestedObject>> listNestedType = new TypeReference<List<TestNestedObject>>() { };
+  private static TypeReference<List<TestNestedObject>> listNestedType = new TypeReference<List<TestNestedObject>>() {};
 
   @Test
   public void testNestedObject() throws IOException {

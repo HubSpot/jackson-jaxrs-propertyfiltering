@@ -25,6 +25,14 @@ public class PropertyFilter {
     applyWildcardsToNamedProperties(filter);
   }
 
+  public boolean hasFilters() {
+    return filter.hasFilters();
+  }
+
+  public void filter(JsonNode node) {
+    filter.filter(node);
+  }
+
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
     if (root.nestedProperties.containsKey("*")) {
       NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
@@ -37,14 +45,6 @@ public class PropertyFilter {
         applyWildcardsToNamedProperties(child);
       }
     }
-  }
-
-  public boolean hasFilters() {
-    return filter.hasFilters();
-  }
-
-  public void filter(JsonNode node) {
-    filter.filter(node);
   }
 
   private static class NestedPropertyFilter {
