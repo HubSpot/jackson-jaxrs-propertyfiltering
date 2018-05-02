@@ -10,7 +10,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractIntegrationTest extends BaseTest {
-  private static TypeReference<List<TestObject>> listType = new TypeReference<List<TestObject>>() {};
+
+  private static final TypeReference<List<TestObject>> LIST_TYPE = new TypeReference<List<TestObject>>() {};
 
   @Test
   public void testNoFiltering() throws IOException {
@@ -64,7 +65,7 @@ public abstract class AbstractIntegrationTest extends BaseTest {
   protected abstract String queryParamName();
 
   protected List<TestObject> getObjects(String... queryParams) throws IOException {
-    return super.getObjects(listType, path(), queryParamName(), queryParams);
+    return super.getObjects(LIST_TYPE, path(), queryParamName(), queryParams);
   }
 
   protected void assertIdPresent(List<TestObject> objects) {

@@ -12,11 +12,11 @@ import com.hubspot.jackson.jaxrs.util.TestResource.TestNestedObject;
 
 public class NestedListIntegrationTest extends BaseTest {
 
-  private static TypeReference<List<TestNestedObject>> listNestedType = new TypeReference<List<TestNestedObject>>() {};
+  private static final TypeReference<List<TestNestedObject>> LIST_NESTED_TYPE = new TypeReference<List<TestNestedObject>>() {};
 
   @Test
   public void testNestedObject() throws IOException {
-    List<TestNestedObject> objects = getObjects(listNestedType, "/nested/list", "property", "id,nested.name");
+    List<TestNestedObject> objects = getObjects(LIST_NESTED_TYPE, "/nested/list", "property", "id,nested.name");
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
@@ -30,7 +30,7 @@ public class NestedListIntegrationTest extends BaseTest {
 
   @Test
   public void testNestedObjectWithExclusion() throws IOException {
-    List<TestNestedObject> objects = getObjects(listNestedType, "/nested/list", "property", "!nested.id");
+    List<TestNestedObject> objects = getObjects(LIST_NESTED_TYPE, "/nested/list", "property", "!nested.id");
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {

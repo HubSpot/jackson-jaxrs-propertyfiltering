@@ -12,11 +12,11 @@ import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
 
 public class NestedObjectIntegrationTest extends BaseTest {
 
-  private static TypeReference<Map<Long, TestObject>> mapNestedType = new TypeReference<Map<Long, TestObject>>() {};
+  private static final TypeReference<Map<Long, TestObject>> MAP_NESTED_TYPE = new TypeReference<Map<Long, TestObject>>() {};
 
   @Test
   public void testNestedObject() throws IOException {
-    Map<Long, TestObject> objects = getObjects(mapNestedType, "/nested/object", "property", "*.name");
+    Map<Long, TestObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "*.name");
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -29,7 +29,7 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testNestedExclusions() throws IOException {
-    Map<Long, TestObject> objects = getObjects(mapNestedType, "/nested/object", "property", "!*.name");
+    Map<Long, TestObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "!*.name");
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -42,7 +42,7 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testNestedObjectWithMultiplePropertyLevels() throws IOException {
-    Map<Long, TestObject> objects = getObjects(mapNestedType, "/nested/object", "property", "*.name,9.id");
+    Map<Long, TestObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "*.name,9.id");
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 9; i++) {
