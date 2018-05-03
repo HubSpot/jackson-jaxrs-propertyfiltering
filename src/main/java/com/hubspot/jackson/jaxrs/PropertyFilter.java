@@ -34,7 +34,7 @@ public class PropertyFilter {
   }
 
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
-    if (root.nestedProperties.containsKey("*")) {
+    if (root.wildcardIncluded || root.wildcardExcluded) {
       NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
 
       for (Entry<String, NestedPropertyFilter> wildcardSibling : root.nestedProperties.entrySet()) {
@@ -51,6 +51,8 @@ public class PropertyFilter {
     private final Set<String> includedProperties = new HashSet<String>();
     private final Set<String> excludedProperties = new HashSet<String>();
     private final Map<String, NestedPropertyFilter> nestedProperties = new HashMap<String, NestedPropertyFilter>();
+    private boolean wildcardIncluded = false;
+    private boolean wildcardExcluded = false;
 
     public void addProperty(String property) {
       boolean excluded = property.startsWith("!");
@@ -72,12 +74,24 @@ public class PropertyFilter {
           nestedFilter.addProperty("!" + suffix);
         } else {
           nestedFilter.addProperty(suffix);
-          includedProperties.add(prefix);
+          if (prefix.equals("*")) {
+            wildcardIncluded = true;
+          } else {
+            includedProperties.add(prefix);
+          }
         }
       } else if (excluded) {
-        excludedProperties.add(property);
+        if (property.equals("*")) {
+          wildcardExcluded = true;
+        } else {
+          excludedProperties.add(property);
+        }
       } else {
-        includedProperties.add(property);
+        if (property.equals("*")) {
+          wildcardIncluded = true;
+        } else {
+          includedProperties.add(property);
+        }
       }
     }
 
@@ -87,7 +101,7 @@ public class PropertyFilter {
     }
 
     public boolean hasFilters() {
-      return !(includedProperties.isEmpty() && excludedProperties.isEmpty() && nestedProperties.isEmpty());
+      return !(includedProperties.isEmpty() && excludedProperties.isEmpty() && nestedProperties.isEmpty() && wildcardIncluded && wildcardExcluded);
     }
 
     public void filter(JsonNode node) {
@@ -105,7 +119,7 @@ public class PropertyFilter {
     }
 
     private void filter(ObjectNode object) {
-      if (!includedProperties.isEmpty() && !includedProperties.contains("*")) {
+      if (!includedProperties.isEmpty() && !wildcardIncluded) {
         object.retain(includedProperties);
       }
 
