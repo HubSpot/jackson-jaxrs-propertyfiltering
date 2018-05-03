@@ -58,7 +58,7 @@ public class TestResource {
   @PropertyFiltering
   public Map<Long, TestObject> getNestedObjectsMap() {
     Map<Long, TestObject> result = new HashMap<>();
-    for (TestObject testNestedObject : getObjects()) {
+    for (TestNestedObject testNestedObject : getNestedObjects()) {
       result.put(testNestedObject.getId(), testNestedObject);
     }
     return result;
@@ -75,8 +75,11 @@ public class TestResource {
 
   private static List<TestNestedObject> getNestedObjects() {
     List<TestNestedObject> objects = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      objects.add(new TestNestedObject((long) i * 100, "Test" + i * 100, new TestObject((long) i, "Test " + i)));
+    for (long i = 0; i < 10; i++) {
+      objects.add(new TestNestedObject(i,
+                                       "Test " + i,
+                                       new TestObject(i * 100, "Nested Test " + i * 100),
+                                       new TestObject(i * 1_000, "SecondNested Test " + i * 1_000)));
     }
 
     return objects;
@@ -106,14 +109,20 @@ public class TestResource {
 
   public static class TestNestedObject extends TestObject {
     private final TestObject nested;
+    private final TestObject secondNested;
 
-    public TestNestedObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") TestObject nested) {
+    public TestNestedObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") TestObject nested, @JsonProperty("secondNested") TestObject secondNested) {
       super(id, name);
       this.nested = nested;
+      this.secondNested = secondNested;
     }
 
     public TestObject getNested() {
       return nested;
+    }
+
+    public TestObject getSecondNested() {
+      return secondNested;
     }
   }
 }

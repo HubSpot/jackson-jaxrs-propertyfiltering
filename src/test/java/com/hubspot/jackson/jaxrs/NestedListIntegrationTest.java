@@ -20,10 +20,10 @@ public class NestedListIntegrationTest extends BaseTest {
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
-      assertThat(objects.get(i).getId()).isEqualTo((long) i * 100);
+      assertThat(objects.get(i).getId()).isEqualTo((long) i);
       assertThat(objects.get(i).getName()).isNull();
 
-      assertThat(objects.get(i).getNested().getName()).isEqualTo("Test " + i);
+      assertThat(objects.get(i).getNested().getName()).isEqualTo("Nested Test " + i * 100);
       assertThat(objects.get(i).getNested().getId()).isNull();
     }
   }
@@ -34,7 +34,7 @@ public class NestedListIntegrationTest extends BaseTest {
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
-      assertThat(objects.get(i).getNested().getName()).isEqualTo("Test " + i);
+      assertThat(objects.get(i).getNested().getName()).isEqualTo("Nested Test " + i * 100);
       assertThat(objects.get(i).getNested().getId()).isNull();
     }
   }
