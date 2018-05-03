@@ -123,7 +123,7 @@ public class PropertyFilter {
         object.retain(includedProperties);
       }
 
-      if (excludedProperties.contains("*")) {
+      if (wildcardExcluded) {
         object.removeAll();
       } else {
         object.remove(excludedProperties);
