@@ -109,7 +109,11 @@ public class PropertyFilter {
         object.retain(includedProperties);
       }
 
-      object.remove(excludedProperties);
+      if (excludedProperties.contains("*")) {
+        object.removeAll();
+      } else {
+        object.remove(excludedProperties);
+      }
 
       Iterator<Entry<String, JsonNode>> fields = object.fields();
       while (fields.hasNext()) {
