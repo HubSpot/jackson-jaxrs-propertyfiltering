@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,10 +46,40 @@ public class TestResource {
     return getObjects();
   }
 
+  @GET
+  @Path("/nested/list")
+  @PropertyFiltering
+  public List<TestNestedObject> getNestedObjectsList() {
+    return getNestedObjects();
+  }
+
+  @GET
+  @Path("/nested/object")
+  @PropertyFiltering
+  public Map<Long, TestObject> getNestedObjectsMap() {
+    Map<Long, TestObject> result = new HashMap<>();
+    for (TestNestedObject testNestedObject : getNestedObjects()) {
+      result.put(testNestedObject.getId(), testNestedObject);
+    }
+    return result;
+  }
+
   private static List<TestObject> getObjects() {
-    List<TestObject> objects = new ArrayList<TestObject>();
+    List<TestObject> objects = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       objects.add(new TestObject((long) i, "Test " + i));
+    }
+
+    return objects;
+  }
+
+  private static List<TestNestedObject> getNestedObjects() {
+    List<TestNestedObject> objects = new ArrayList<>();
+    for (long i = 0; i < 10; i++) {
+      objects.add(new TestNestedObject(i,
+                                       "Test " + i,
+                                       new TestObject(i * 100, "Nested Test " + i * 100),
+                                       new TestObject(i * 1_000, "SecondNested Test " + i * 1_000)));
     }
 
     return objects;
@@ -72,6 +104,25 @@ public class TestResource {
 
     public String getName() {
       return name;
+    }
+  }
+
+  public static class TestNestedObject extends TestObject {
+    private final TestObject nested;
+    private final TestObject secondNested;
+
+    public TestNestedObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") TestObject nested, @JsonProperty("secondNested") TestObject secondNested) {
+      super(id, name);
+      this.nested = nested;
+      this.secondNested = secondNested;
+    }
+
+    public TestObject getNested() {
+      return nested;
+    }
+
+    public TestObject getSecondNested() {
+      return secondNested;
     }
   }
 }

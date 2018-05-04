@@ -1,42 +1,17 @@
 package com.hubspot.jackson.jaxrs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.hubspot.jackson.jaxrs.util.Helper;
 import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
-import org.assertj.core.util.Strings;
-import org.eclipse.jetty.server.Server;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class AbstractIntegrationTest {
-  private static ObjectReader reader;
-  private static Server server;
-  private static int port;
-  private static TypeReference<List<TestObject>> listType;
+public abstract class AbstractIntegrationTest extends BaseTest {
 
-  @BeforeClass
-  public static void start() throws Exception {
-    reader = new ObjectMapper().reader();
-    server = Helper.INSTANCE.startServer();
-    port = Helper.INSTANCE.getPort(server);
-    listType = new TypeReference<List<TestObject>>() { };
-  }
-
-  @AfterClass
-  public static void stop() throws Exception {
-    if (server != null) {
-      server.stop();
-    }
-  }
+  private static final TypeReference<List<TestObject>> LIST_TYPE = new TypeReference<List<TestObject>>() {};
 
   @Test
   public void testNoFiltering() throws IOException {
@@ -90,14 +65,7 @@ public abstract class AbstractIntegrationTest {
   protected abstract String queryParamName();
 
   protected List<TestObject> getObjects(String... queryParams) throws IOException {
-    String urlString = "http://localhost:" + port + "/test" + path();
-    if (queryParams.length > 0) {
-      urlString += "?" + queryParamName() +"=" + Strings.join(queryParams).with("&" + queryParamName() + "=");
-    }
-
-    URL url = new URL(urlString);
-
-    return reader.forType(listType).readValue(url.openStream());
+    return super.getObjects(LIST_TYPE, path(), queryParamName(), queryParams);
   }
 
   protected void assertIdPresent(List<TestObject> objects) {

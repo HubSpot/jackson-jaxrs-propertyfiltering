@@ -3,6 +3,7 @@ package com.hubspot.jackson.jaxrs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -20,6 +21,8 @@ public class PropertyFilter {
         filter.addProperty(property);
       }
     }
+
+    applyWildcardsToNamedProperties(filter);
   }
 
   public boolean hasFilters() {
@@ -28,6 +31,20 @@ public class PropertyFilter {
 
   public void filter(JsonNode node) {
     filter.filter(node);
+  }
+
+  private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
+    if (root.nestedProperties.containsKey("*")) {
+      NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
+
+      for (Entry<String, NestedPropertyFilter> wildcardSibling : root.nestedProperties.entrySet()) {
+        wildcardSibling.getValue().mergeFilters(wildcardFilters);
+      }
+    } else {
+      for (NestedPropertyFilter child : root.nestedProperties.values()) {
+        applyWildcardsToNamedProperties(child);
+      }
+    }
   }
 
   private static class NestedPropertyFilter {
@@ -64,6 +81,11 @@ public class PropertyFilter {
       }
     }
 
+    public void mergeFilters(NestedPropertyFilter other) {
+      includedProperties.addAll(other.includedProperties);
+      excludedProperties.addAll(other.excludedProperties);
+    }
+
     public boolean hasFilters() {
       return !(includedProperties.isEmpty() && excludedProperties.isEmpty() && nestedProperties.isEmpty());
     }
@@ -83,17 +105,24 @@ public class PropertyFilter {
     }
 
     private void filter(ObjectNode object) {
-      if (!includedProperties.isEmpty()) {
+      if (!includedProperties.isEmpty() && !includedProperties.contains("*")) {
         object.retain(includedProperties);
       }
 
-      object.remove(excludedProperties);
+      if (excludedProperties.contains("*")) {
+        object.removeAll();
+      } else {
+        object.remove(excludedProperties);
+      }
 
-      for (Entry<String, NestedPropertyFilter> entry : nestedProperties.entrySet()) {
-        JsonNode node = object.get(entry.getKey());
+      Iterator<Entry<String, JsonNode>> fields = object.fields();
+      while (fields.hasNext()) {
+        Entry<String, JsonNode> field = fields.next();
 
-        if (node != null) {
-          entry.getValue().filter(node);
+        if (nestedProperties.containsKey(field.getKey())) {
+          nestedProperties.get(field.getKey()).filter(field.getValue());
+        } else if (nestedProperties.containsKey("*")) {
+          nestedProperties.get("*").filter(field.getValue());
         }
       }
     }
