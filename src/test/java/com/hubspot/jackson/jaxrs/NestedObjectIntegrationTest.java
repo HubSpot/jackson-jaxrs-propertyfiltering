@@ -29,8 +29,7 @@ public class NestedObjectIntegrationTest extends BaseTest {
   }
 
   @Test
-  public void testNestedPrefix() throws IOException {
-
+  public void testNestedWithoutPrefix() throws IOException {
     // no prefix, should select root properties
     TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/nested", "property", "id,name");
 
@@ -38,9 +37,24 @@ public class NestedObjectIntegrationTest extends BaseTest {
     assertThat(object.getSecondNested()).isNull();
     assertThat(object.getId()).isEqualTo(1);
     assertThat(object.getName()).isEqualTo("Test 1");
+  }
 
+  @Test
+  public void testNestedPrefixWithoutPeriod() throws IOException {
     // with prefix, should select nested object properties
-    object = getObjects(NESTED_OBJECT_TYPE, "/prefix", "property", "id,name");
+    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/prefix", "property", "id,name");
+
+    assertThat(object.getId()).isNull();
+    assertThat(object.getName()).isNull();
+    assertThat(object.getSecondNested()).isNull();
+    assertThat(object.getNested().getId()).isEqualTo(100);
+    assertThat(object.getNested().getName()).isEqualTo("Nested Test 100");
+  }
+
+  @Test
+  public void testNestedPrefixWithPeriod() throws IOException {
+    // with prefix, should select nested object properties
+    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/prefix/period", "property", "id,name");
 
     assertThat(object.getId()).isNull();
     assertThat(object.getName()).isNull();

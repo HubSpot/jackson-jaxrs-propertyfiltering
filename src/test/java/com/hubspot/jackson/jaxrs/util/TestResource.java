@@ -73,8 +73,15 @@ public class TestResource {
 
   @GET
   @Path("/prefix")
+  @PropertyFiltering(prefix = "nested")
+  public TestNestedObject getPrefixedNestedObjectWithoutPeriod() {
+    return getNestedObject(1);
+  }
+
+  @GET
+  @Path("/prefix/period")
   @PropertyFiltering(prefix = "nested.")
-  public TestNestedObject getPrefixedNestedObject() {
+  public TestNestedObject getPrefixedNestedObjectWithPeriod() {
     return getNestedObject(1);
   }
 
