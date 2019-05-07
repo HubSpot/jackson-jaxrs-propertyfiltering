@@ -10,4 +10,9 @@ import java.lang.annotation.Target;
 public @interface PropertyFiltering {
   String using() default "property";
   String[] always() default {};
+
+  /**
+   * Prefix added to all requested property names. This does not apply to attributes specified with {@link #always()}
+   */
+  String prefix() default "";
 }

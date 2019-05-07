@@ -1,9 +1,5 @@
 package com.hubspot.jackson.jaxrs.util;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.hubspot.jackson.jaxrs.PropertyFiltering;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +9,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
 @Path("/test")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,6 +54,13 @@ public class TestResource {
   }
 
   @GET
+  @Path("/nested")
+  @PropertyFiltering
+  public TestNestedObject getNestedObject() {
+    return getNestedObject(1);
+  }
+
+  @GET
   @Path("/nested/object")
   @PropertyFiltering
   public Map<Long, TestObject> getNestedObjectsMap() {
@@ -62,6 +69,20 @@ public class TestResource {
       result.put(testNestedObject.getId(), testNestedObject);
     }
     return result;
+  }
+
+  @GET
+  @Path("/prefix")
+  @PropertyFiltering(prefix = "nested")
+  public TestNestedObject getPrefixedNestedObjectWithoutPeriod() {
+    return getNestedObject(1);
+  }
+
+  @GET
+  @Path("/prefix/period")
+  @PropertyFiltering(prefix = "nested.")
+  public TestNestedObject getPrefixedNestedObjectWithPeriod() {
+    return getNestedObject(1);
   }
 
   private static List<TestObject> getObjects() {
@@ -73,13 +94,17 @@ public class TestResource {
     return objects;
   }
 
+  private static TestNestedObject getNestedObject(long i) {
+    return new TestNestedObject(i,
+          "Test " + i,
+          new TestObject(i * 100, "Nested Test " + i * 100),
+          new TestObject(i * 1_000, "SecondNested Test " + i * 1_000));
+  }
+
   private static List<TestNestedObject> getNestedObjects() {
     List<TestNestedObject> objects = new ArrayList<>();
     for (long i = 0; i < 10; i++) {
-      objects.add(new TestNestedObject(i,
-                                       "Test " + i,
-                                       new TestObject(i * 100, "Nested Test " + i * 100),
-                                       new TestObject(i * 1_000, "SecondNested Test " + i * 1_000)));
+      objects.add(getNestedObject(i));
     }
 
     return objects;

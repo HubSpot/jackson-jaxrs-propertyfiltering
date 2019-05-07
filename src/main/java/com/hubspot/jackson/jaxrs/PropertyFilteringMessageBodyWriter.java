@@ -1,17 +1,5 @@
 package com.hubspot.jackson.jaxrs;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.util.TokenBuffer;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -30,6 +18,18 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.servlets.MetricsServlet;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -65,7 +65,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
 
     Collection<String> properties = new ArrayList<>();
     if (annotation != null) {
-      properties.addAll(getProperties(annotation.using()));
+      properties.addAll(getProperties(annotation.using(), annotation.prefix()));
       properties.addAll(Arrays.asList(annotation.always()));
     }
 
@@ -89,8 +89,12 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
   }
 
-  protected Collection<String> getProperties(String name) {
+  protected Collection<String> getProperties(String name, String prefix) {
     List<String> values = uriInfo.getQueryParameters().get(name);
+
+    if (!prefix.isEmpty() && !prefix.endsWith(".")) {
+      prefix = prefix + ".";
+    }
 
     List<String> properties = new ArrayList<>();
     if (values != null) {
@@ -99,7 +103,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
         for (String part : parts) {
           part = part.trim();
           if (!part.isEmpty()) {
-            properties.add(part);
+            properties.add(prefix + part);
           }
         }
       }
