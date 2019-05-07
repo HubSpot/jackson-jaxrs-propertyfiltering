@@ -92,7 +92,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   protected Collection<String> getProperties(String name, String prefix) {
     List<String> values = uriInfo.getQueryParameters().get(name);
 
-    if (!prefix.endsWith(".")) {
+    if (!prefix.isEmpty() && !prefix.endsWith(".")) {
       prefix = prefix + ".";
     }
 
