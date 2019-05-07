@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface PropertyFiltering {
   String using() default "property";
   String[] always() default {};
+  String prefix() default "";
 }

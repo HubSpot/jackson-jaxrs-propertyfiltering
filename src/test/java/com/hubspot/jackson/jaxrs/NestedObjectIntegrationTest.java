@@ -13,6 +13,7 @@ import com.hubspot.jackson.jaxrs.util.TestResource.TestNestedObject;
 public class NestedObjectIntegrationTest extends BaseTest {
 
   private static final TypeReference<Map<Long, TestNestedObject>> MAP_NESTED_TYPE = new TypeReference<Map<Long, TestNestedObject>>() {};
+  private static final TypeReference<TestNestedObject> NESTED_OBJECT_TYPE = new TypeReference<TestNestedObject>() {};
 
   @Test
   public void testNestedObject() throws IOException {
@@ -25,6 +26,27 @@ public class NestedObjectIntegrationTest extends BaseTest {
       assertThat(objects.get(i).getId()).isNull();
       assertThat(objects.get(i).getName()).isEqualTo("Test " + i);
     }
+  }
+
+  @Test
+  public void testNestedPrefix() throws IOException {
+
+    // no prefix, should select root properties
+    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/nested", "property", "id,name");
+
+    assertThat(object.getNested()).isNull();
+    assertThat(object.getSecondNested()).isNull();
+    assertThat(object.getId()).isEqualTo(1);
+    assertThat(object.getName()).isEqualTo("Test 1");
+
+    // with prefix, should select nested object properties
+    object = getObjects(NESTED_OBJECT_TYPE, "/prefix", "property", "id,name");
+
+    assertThat(object.getId()).isNull();
+    assertThat(object.getName()).isNull();
+    assertThat(object.getSecondNested()).isNull();
+    assertThat(object.getNested().getId()).isEqualTo(100);
+    assertThat(object.getNested().getName()).isEqualTo("Nested Test 100");
   }
 
   @Test
