@@ -33,6 +33,10 @@ public class PropertyFilter {
     filter.filter(node);
   }
 
+  public boolean matches(String property) {
+    return filter.matches(property);
+  }
+
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
     if (root.nestedProperties.containsKey("*")) {
       NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
@@ -95,6 +99,44 @@ public class PropertyFilter {
         filter((ObjectNode) node);
       } else if (node.isArray()) {
         filter((ArrayNode) node);
+      }
+    }
+
+    public boolean matches(String property) {
+      if (!hasFilters()) {
+        return true;
+      }
+
+      final String prefix;
+      final String suffix;
+      if (property.contains(".")) {
+        prefix = property.substring(0, property.indexOf('.'));
+        suffix = property.substring(property.indexOf('.') + 1);
+      } else {
+        prefix = property;
+        suffix = null;
+      }
+
+      if (excludedProperties.contains("*") || excludedProperties.contains(prefix)) {
+        return false;
+      } else if (includedProperties.contains("*") || includedProperties.contains(prefix)) {
+        if (suffix != null && nestedProperties.containsKey(prefix)) {
+          return nestedProperties.get(prefix).matches(suffix);
+        } else if (nestedProperties.containsKey("*")) {
+          return suffix != null && nestedProperties.get("*").matches(suffix);
+        } else {
+          return true;
+        }
+      } else if (suffix != null) {
+        if (nestedProperties.containsKey(prefix)) {
+          return nestedProperties.get(prefix).matches(suffix);
+        } else if (nestedProperties.containsKey("*")) {
+          return nestedProperties.get("*").matches(suffix);
+        } else {
+          return includedProperties.isEmpty();
+        }
+      } else {
+        return includedProperties.isEmpty();
       }
     }
 

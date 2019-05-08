@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
@@ -62,14 +58,8 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   public void writeTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                       MultivaluedMap<String, Object> httpHeaders, OutputStream os) throws IOException {
     PropertyFiltering annotation = findPropertyFiltering(annotations);
+    PropertyFilter propertyFilter = PropertyFilterBuilder.newBuilder(uriInfo).forAnnotation(annotation);
 
-    Collection<String> properties = new ArrayList<>();
-    if (annotation != null) {
-      properties.addAll(getProperties(annotation.using(), annotation.prefix()));
-      properties.addAll(Arrays.asList(annotation.always()));
-    }
-
-    PropertyFilter propertyFilter = createPropertyFilter(properties, o, type, genericType, annotations, httpHeaders);
     if (!propertyFilter.hasFilters()) {
       write(o, type, genericType, annotations, mediaType, httpHeaders, os);
       return;
@@ -87,35 +77,6 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     } finally {
       context.stop();
     }
-  }
-
-  protected Collection<String> getProperties(String name, String prefix) {
-    List<String> values = uriInfo.getQueryParameters().get(name);
-
-    if (!prefix.isEmpty() && !prefix.endsWith(".")) {
-      prefix = prefix + ".";
-    }
-
-    List<String> properties = new ArrayList<>();
-    if (values != null) {
-      for (String value : values) {
-        String[] parts = value.split(",");
-        for (String part : parts) {
-          part = part.trim();
-          if (!part.isEmpty()) {
-            properties.add(prefix + part);
-          }
-        }
-      }
-    }
-
-    return properties;
-  }
-
-  protected PropertyFilter createPropertyFilter(Collection<String> properties, Object o, Class<?> type,
-                                                Type genericType, Annotation[] annotations,
-                                                MultivaluedMap<String, Object> httpHeaders) {
-    return new PropertyFilter(properties);
   }
 
   protected Timer getTimer() {
