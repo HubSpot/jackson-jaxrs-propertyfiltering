@@ -30,6 +30,8 @@ import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Object> {
+  public static final String DELEGATE_ATTRIBUTE_NAME =
+      "com.hubspot.jackson.jaxrs.PropertyFilteringMessageBodyWriter.delegate";
 
   @Context
   Application application;
@@ -103,6 +105,11 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
 
     synchronized (this) {
+      if (delegate != null) {
+        return delegate;
+      }
+
+      delegate = (JacksonJsonProvider) servletContext.getAttribute(DELEGATE_ATTRIBUTE_NAME);
       if (delegate != null) {
         return delegate;
       }
