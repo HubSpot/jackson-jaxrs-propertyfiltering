@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.core.filter.TokenFilter;
 
 /**
- * Subclass of TokenFilterContext that forces it to write empty objects and arrays
+ * Clone of TokenFilterContext that forces it to write empty objects and arrays
  */
 public class PropertyFilteringTokenContext extends JsonStreamContext {
 

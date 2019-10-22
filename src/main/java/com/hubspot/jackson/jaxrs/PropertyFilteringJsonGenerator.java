@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
 
 /**
- * Subclass of FilteringGeneratorDelegate that forces it to write empty objects and arrays
+ * Clone of FilteringGeneratorDelegate that forces it to write empty objects and arrays
  */
 public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
   private TokenFilter itemFilter;

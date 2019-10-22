@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,8 +46,9 @@ public class PropertyFilter extends TokenFilter {
 
   @Override
   public String toString() {
-    // TODO
-    return super.toString();
+    return new StringJoiner(", ", "PropertyFilter[", "]")
+        .add("filter=" + filter)
+        .toString();
   }
 
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
@@ -175,8 +177,11 @@ public class PropertyFilter extends TokenFilter {
 
     @Override
     public String toString() {
-      // TODO
-      return super.toString();
+      return new StringJoiner(", ", "NestedPropertyFilter[", "]")
+          .add("includedProperties=" + includedProperties)
+          .add("excludedProperties=" + excludedProperties)
+          .add("nestedProperties=" + nestedProperties)
+          .toString();
     }
 
     private void filter(ObjectNode object) {
