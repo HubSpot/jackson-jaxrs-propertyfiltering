@@ -19,11 +19,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.servlets.MetricsServlet;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 
@@ -71,9 +69,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     try {
       ObjectMapper mapper = getJsonProvider().locateMapper(type, mediaType);
       ObjectWriter writer = JsonEndpointConfig.forWriting(mapper.writer(), annotations, null).getWriter();
-      JsonNode tree = valueToTree(mapper, writer, o);
-      propertyFilter.filter(tree);
-      write(tree, tree.getClass(), tree.getClass(), annotations, mediaType, httpHeaders, os);
+      writeValue(writer, propertyFilter, o, os);
     } finally {
       context.stop();
     }
@@ -119,23 +115,27 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     }
   }
 
-  private JsonNode valueToTree(ObjectMapper mapper, ObjectWriter writer, Object o) {
-    if (o == null) {
-      return null;
-    }
+  private void writeValue(ObjectWriter writer, PropertyFilter filter, Object value, OutputStream outputStream) throws IOException {
+    JsonGenerator generator = writer.getFactory().createGenerator(outputStream);
+    // Important: we are NOT to close the underlying stream after
+    // mapping, so we need to instruct generator
+    generator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+    generator = new PropertyFilteringJsonGenerator(generator, filter);
 
-    TokenBuffer buf = new TokenBuffer(mapper, false);
-    JsonNode result;
+    boolean ok = false;
+
     try {
-      writer.writeValue(buf, o);
-      JsonParser jp = buf.asParser();
-      result = mapper.readTree(jp);
-      jp.close();
-    } catch (IOException e) { // should not occur, no real i/o...
-      throw new IllegalArgumentException(e.getMessage(), e);
+      writer.writeValue(generator, value);
+      ok = true;
+    } finally {
+      if (ok) {
+        generator.close();
+      } else {
+        try {
+          generator.close();
+        } catch (Exception ignored) {}
+      }
     }
-
-    return result;
   }
 
   private void write(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,

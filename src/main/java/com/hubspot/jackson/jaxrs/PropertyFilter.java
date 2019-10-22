@@ -7,12 +7,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringJoiner;
 
+import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class PropertyFilter {
+public class PropertyFilter extends TokenFilter {
   private final NestedPropertyFilter filter = new NestedPropertyFilter();
 
   public PropertyFilter(Collection<String> properties) {
@@ -37,6 +39,18 @@ public class PropertyFilter {
     return filter.matches(property);
   }
 
+  @Override
+  public TokenFilter includeProperty(String name) {
+    return filter.includeProperty(name);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", "PropertyFilter[", "]")
+        .add("filter=" + filter)
+        .toString();
+  }
+
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
     if (root.nestedProperties.containsKey("*")) {
       NestedPropertyFilter wildcardFilters = root.nestedProperties.get("*");
@@ -51,7 +65,7 @@ public class PropertyFilter {
     }
   }
 
-  private static class NestedPropertyFilter {
+  private static class NestedPropertyFilter extends TokenFilter {
     private final Set<String> includedProperties = new HashSet<String>();
     private final Set<String> excludedProperties = new HashSet<String>();
     private final Map<String, NestedPropertyFilter> nestedProperties = new HashMap<String, NestedPropertyFilter>();
@@ -144,6 +158,30 @@ public class PropertyFilter {
       for (JsonNode node : array) {
         filter(node);
       }
+    }
+
+    @Override
+    public TokenFilter includeProperty(String name) {
+      if (!includedProperties.isEmpty() && !includedProperties.contains("*") && !includedProperties.contains(name)) {
+        return null;
+      } else if (excludedProperties.contains("*") || excludedProperties.contains(name)) {
+        return null;
+      } else if (nestedProperties.containsKey(name)) {
+        return nestedProperties.get(name);
+      } else if (nestedProperties.containsKey("*")) {
+        return nestedProperties.get("*");
+      } else {
+        return TokenFilter.INCLUDE_ALL;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return new StringJoiner(", ", "NestedPropertyFilter[", "]")
+          .add("includedProperties=" + includedProperties)
+          .add("excludedProperties=" + excludedProperties)
+          .add("nestedProperties=" + nestedProperties)
+          .toString();
     }
 
     private void filter(ObjectNode object) {
