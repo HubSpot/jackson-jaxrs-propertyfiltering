@@ -11,7 +11,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.hubspot.jackson</groupId>
   <artifactId>jackson-jaxrs-propertyfiltering</artifactId>
-  <version>0.7.1</version>
+  <version>0.8.4</version>
 </dependency>
 ```
 
