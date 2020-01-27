@@ -46,6 +46,26 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
   }
 
   @Override
+  public void writeStartArray(Object forValue) throws IOException {
+    if (itemFilter == null) {
+      filterContext = filterContext.createChildArrayContext(null, false);
+    } else {
+      filterContext = filterContext.createChildArrayContext(itemFilter, true);
+      delegate.writeStartArray(forValue);
+    }
+  }
+
+  @Override
+  public void writeStartArray(Object forValue, int size) throws IOException {
+    if (itemFilter == null) {
+      filterContext = filterContext.createChildArrayContext(null, false);
+    } else {
+      filterContext = filterContext.createChildArrayContext(itemFilter, true);
+      delegate.writeStartArray(forValue, size);
+    }
+  }
+
+  @Override
   public void writeEndArray() throws IOException {
     filterContext = filterContext.closeArray(delegate);
 
@@ -71,6 +91,16 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     } else {
       filterContext = filterContext.createChildObjectContext(itemFilter, true);
       delegate.writeStartObject(forValue);
+    }
+  }
+
+  @Override
+  public void writeStartObject(Object forValue, int size) throws IOException {
+    if (itemFilter == null) {
+      filterContext = filterContext.createChildObjectContext(itemFilter, false);
+    } else {
+      filterContext = filterContext.createChildObjectContext(itemFilter, true);
+      delegate.writeStartObject(forValue, size);
     }
   }
 
