@@ -2,6 +2,10 @@ language: java
 jdk:
   - openjdk8
   - openjdk11
+ENV:
+  - # not sure if this will work
+  - MAVEN_OPTS="-Ddep.jackson.version=2.9.10 -Ddep.jackson-databind.version=2.9.10.2"
+  - MAVEN_OPTS="-Ddep.jackson.version=2.10.2 -Ddep.jackson-databind.version=2.10.2"
 
 script: mvn -B -q verify
 
