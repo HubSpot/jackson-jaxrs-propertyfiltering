@@ -4,7 +4,7 @@ jdk:
   - openjdk11
 
 env:
-  - # not sure if this will work
+  - # use the Jackson versions from the POM
   - MAVEN_OPTS="-Ddep.jackson.version=2.9.10 -Ddep.jackson-databind.version=2.9.10.2"
   - MAVEN_OPTS="-Ddep.jackson.version=2.10.2 -Ddep.jackson-databind.version=2.10.2"
 
