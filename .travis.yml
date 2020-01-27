@@ -3,13 +3,10 @@ jdk:
   - openjdk8
   - openjdk11
 
-jobs:
-  include:
-  - name: "Jackson versions from POM"
-  - name: "Jackson 2.9.10"
-    env: JACKSON_VERSIONS="-Ddep.jackson.version=2.9.10 -Ddep.jackson-databind.version=2.9.10.2"
-  - name: "Jackson 2.10"
-    env: JACKSON_VERSIONS="-Ddep.jackson.version=2.10.2 -Ddep.jackson-databind.version=2.10.2"
+env:
+  - # use Jackson versions from POM
+  - JACKSON_VERSIONS="-Ddep.jackson.version=2.9.10 -Ddep.jackson-databind.version=2.9.10.2"
+  - JACKSON_VERSIONS="-Ddep.jackson.version=2.10.2 -Ddep.jackson-databind.version=2.10.2"
 
 script: mvn -B -q verify $JACKSON_VERSIONS
 
