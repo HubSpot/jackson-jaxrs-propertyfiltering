@@ -3,11 +3,6 @@ jdk:
   - openjdk8
   - openjdk11
 
-env:
-  - # use the Jackson versions from the POM
-  - MAVEN_OPTS="-Ddep.jackson.version=2.9.10 -Ddep.jackson-databind.version=2.9.10.2"
-  - MAVEN_OPTS="-Ddep.jackson.version=2.10.2 -Ddep.jackson-databind.version=2.10.2"
-
 jobs:
   include:
   - name: "Jackson versions from POM"
