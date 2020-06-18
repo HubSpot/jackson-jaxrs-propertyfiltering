@@ -149,9 +149,11 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   }
 
   private static PropertyFiltering findPropertyFiltering(Annotation... annotations) {
-    for (Annotation annotation : annotations) {
-      if (annotation.annotationType() == PropertyFiltering.class) {
-        return (PropertyFiltering) annotation;
+    if (annotations != null) {
+      for (Annotation annotation : annotations) {
+        if (annotation.annotationType() == PropertyFiltering.class) {
+          return (PropertyFiltering) annotation;
+        }
       }
     }
 
