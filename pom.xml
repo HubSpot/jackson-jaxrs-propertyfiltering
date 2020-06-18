@@ -10,7 +10,7 @@
 
   <groupId>com.hubspot.jackson</groupId>
   <artifactId>jackson-jaxrs-propertyfiltering</artifactId>
-  <version>0.8.6-SNAPSHOT</version>
+  <version>0.8.6</version>
   <description>JAX-RS MessageBodyWriter that supports filtering via query parameters</description>
 
   <properties>
@@ -131,6 +131,6 @@
     <connection>scm:git:git@github.com:HubSpot/jackson-jaxrs-propertyfiltering.git</connection>
     <developerConnection>scm:git:git@github.com:HubSpot/jackson-jaxrs-propertyfiltering.git</developerConnection>
     <url>git@github.com:HubSpot/jackson-jaxrs-propertyfiltering.git</url>
-    <tag>HEAD</tag>
+    <tag>jackson-jaxrs-propertyfiltering-0.8.6</tag>
   </scm>
 </project>
