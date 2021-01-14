@@ -80,7 +80,7 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   }
 
   protected MetricRegistry getMetricRegistry() {
-    MetricRegistry registry = (MetricRegistry) servletContext.getAttribute(MetricsServlet.METRICS_REGISTRY);
+    MetricRegistry registry = MetricRegistry registry = servletContext != null ? (MetricRegistry) servletContext.getAttribute(MetricsServlet.METRICS_REGISTRY) : null;
 
     if (registry == null) {
       registry = SharedMetricRegistries.getOrCreate("com.hubspot");
