@@ -14,10 +14,8 @@
   <description>JAX-RS MessageBodyWriter that supports filtering via query parameters</description>
 
   <properties>
-    <basepom.check.skip-spotbugs>true</basepom.check.skip-spotbugs>
-
-    <dep.jackson.version>2.12.6</dep.jackson.version>
-    <dep.jackson-databind.version>2.12.6</dep.jackson-databind.version>
+    <dep.jackson.version>2.15.3</dep.jackson.version>
+    <dep.jackson-databind.version>2.15.3</dep.jackson-databind.version>
     <dep.jaxb.version>2.3.2</dep.jaxb.version>
   </properties>
 
