@@ -1,11 +1,9 @@
 package com.hubspot.jackson.jaxrs.util;
 
+import com.hubspot.jackson.jaxrs.PropertyFilteringMessageBodyWriter;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.ws.rs.core.Application;
-
-import com.hubspot.jackson.jaxrs.PropertyFilteringMessageBodyWriter;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -26,7 +24,12 @@ public enum Helper {
     server.setHandler(contexts);
     ServletHolder jaxrs = new ServletHolder(ServletContainer.class);
     jaxrs.setInitParameter("javax.ws.rs.Application", TestApplication.class.getName());
-    ServletContextHandler mainHandler = new ServletContextHandler(contexts, "/", true, false);
+    ServletContextHandler mainHandler = new ServletContextHandler(
+      contexts,
+      "/",
+      true,
+      false
+    );
     mainHandler.addServlet(jaxrs, "/*");
 
     server.setHandler(mainHandler);

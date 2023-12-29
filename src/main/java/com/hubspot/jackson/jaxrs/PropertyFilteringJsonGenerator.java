@@ -1,20 +1,20 @@
 package com.hubspot.jackson.jaxrs;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.fasterxml.jackson.core.Base64Variant;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Clone of FilteringGeneratorDelegate that forces it to write empty objects and arrays
  */
 public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
+
   private TokenFilter itemFilter;
   private PropertyFilteringTokenContext filterContext;
 
@@ -164,7 +164,7 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     }
   }
 
-    /*
+  /*
     /**********************************************************
     /* Public API, write methods, text/String values
     /**********************************************************
@@ -206,7 +206,7 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     }
   }
 
-    /*
+  /*
     /**********************************************************
     /* Public API, write methods, binary/raw content
     /**********************************************************
@@ -269,14 +269,16 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
   }
 
   @Override
-  public void writeBinary(Base64Variant b64variant, byte[] data, int offset, int len) throws IOException {
+  public void writeBinary(Base64Variant b64variant, byte[] data, int offset, int len)
+    throws IOException {
     if (itemFilter != null) {
       delegate.writeBinary(b64variant, data, offset, len);
     }
   }
 
   @Override
-  public int writeBinary(Base64Variant b64variant, InputStream data, int dataLength) throws IOException {
+  public int writeBinary(Base64Variant b64variant, InputStream data, int dataLength)
+    throws IOException {
     if (itemFilter != null) {
       return delegate.writeBinary(b64variant, data, dataLength);
     } else {
@@ -284,7 +286,7 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     }
   }
 
-    /*
+  /*
     /**********************************************************
     /* Public API, write methods, other value types
     /**********************************************************
@@ -340,7 +342,8 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
   }
 
   @Override
-  public void writeNumber(String encodedValue) throws IOException, UnsupportedOperationException {
+  public void writeNumber(String encodedValue)
+    throws IOException, UnsupportedOperationException {
     if (itemFilter != null) {
       delegate.writeNumber(encodedValue);
     }
@@ -360,7 +363,7 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     }
   }
 
-    /*
+  /*
     /**********************************************************
     /* Overridden field methods
     /**********************************************************
@@ -374,7 +377,7 @@ public class PropertyFilteringJsonGenerator extends JsonGeneratorDelegate {
     }
   }
 
-    /*
+  /*
     /**********************************************************
     /* Public API, write methods, Native Ids
     /**********************************************************

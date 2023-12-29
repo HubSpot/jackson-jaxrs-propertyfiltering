@@ -18,7 +18,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testArrayList() throws IOException {
-    List<TestArrayObject> objects = getObjects(LIST_ARRAY_TYPE, "/array/list", "property", "id,nested.secondNested.name");
+    List<TestArrayObject> objects = getObjects(
+      LIST_ARRAY_TYPE,
+      "/array/list",
+      "property",
+      "id,nested.secondNested.name"
+    );
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
@@ -31,7 +36,8 @@ public class ArrayIntegrationTest extends BaseTest {
 
         assertThat(nested.getNested()).isNull();
 
-        assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (i + j) * 1_000);
+        assertThat(nested.getSecondNested().getName())
+          .isEqualTo("SecondNested Test " + (i + j) * 1_000);
         assertThat(nested.getSecondNested().getId()).isNull();
       }
     }
@@ -39,7 +45,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testArrayListWithExclusion() throws IOException {
-    List<TestArrayObject> objects = getObjects(LIST_ARRAY_TYPE, "/array/list", "property", "!nested.secondNested");
+    List<TestArrayObject> objects = getObjects(
+      LIST_ARRAY_TYPE,
+      "/array/list",
+      "property",
+      "!nested.secondNested"
+    );
 
     assertThat(objects).hasSize(10);
     for (int i = 0; i < 10; i++) {
@@ -50,7 +61,8 @@ public class ArrayIntegrationTest extends BaseTest {
       for (int j = 0; j < 10; j++) {
         TestNestedObject nested = objects.get(i).getNested().get(j);
 
-        assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (i + j) * 100);
+        assertThat(nested.getNested().getName())
+          .isEqualTo("Nested Test " + (i + j) * 100);
         assertThat(nested.getNested().getId()).isEqualTo((i + j) * 100);
 
         assertThat(nested.getSecondNested()).isNull();
@@ -60,7 +72,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testArrayObject() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "*.name");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "*.name"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -78,7 +95,12 @@ public class ArrayIntegrationTest extends BaseTest {
   @Test
   public void testArrayWithoutPrefix() throws IOException {
     // no prefix, should select root properties
-    TestArrayObject object = getObjects(ARRAY_OBJECT_TYPE, "/array", "property", "id,name");
+    TestArrayObject object = getObjects(
+      ARRAY_OBJECT_TYPE,
+      "/array",
+      "property",
+      "id,name"
+    );
 
     assertThat(object.getNested()).isNull();
     assertThat(object.getId()).isEqualTo(1);
@@ -87,7 +109,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testArrayExclusions() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "!*.name");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "!*.name"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -102,10 +129,12 @@ public class ArrayIntegrationTest extends BaseTest {
       for (int j = 0; j < 10; j++) {
         TestNestedObject nested = object.getNested().get(j);
 
-        assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (i + j) * 100);
+        assertThat(nested.getNested().getName())
+          .isEqualTo("Nested Test " + (i + j) * 100);
         assertThat(nested.getNested().getId()).isEqualTo((i + j) * 100);
 
-        assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (i + j) * 1_000);
+        assertThat(nested.getSecondNested().getName())
+          .isEqualTo("SecondNested Test " + (i + j) * 1_000);
         assertThat(nested.getSecondNested().getId()).isEqualTo((i + j) * 1_000);
       }
     }
@@ -113,7 +142,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testSecondLevelWildcard() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "9.*");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "9.*"
+    );
 
     assertThat(objects).containsOnlyKeys(9L);
 
@@ -129,14 +163,20 @@ public class ArrayIntegrationTest extends BaseTest {
       assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (j + 9) * 100);
       assertThat(nested.getNested().getId()).isEqualTo((j + 9) * 100);
 
-      assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (j + 9) * 1_000);
+      assertThat(nested.getSecondNested().getName())
+        .isEqualTo("SecondNested Test " + (j + 9) * 1_000);
       assertThat(nested.getSecondNested().getId()).isEqualTo((j + 9) * 1_000);
     }
   }
 
   @Test
   public void testSecondLevelWildcardExclusion() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "!9.*");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "!9.*"
+    );
 
     assertThat(objects).containsKeys(9L);
     assertThat(objects.get(9L).getId()).isNull();
@@ -155,10 +195,12 @@ public class ArrayIntegrationTest extends BaseTest {
       for (int j = 0; j < 10; j++) {
         TestNestedObject nested = object.getNested().get(j);
 
-        assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (i + j) * 100);
+        assertThat(nested.getNested().getName())
+          .isEqualTo("Nested Test " + (i + j) * 100);
         assertThat(nested.getNested().getId()).isEqualTo((i + j) * 100);
 
-        assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (i + j) * 1_000);
+        assertThat(nested.getSecondNested().getName())
+          .isEqualTo("SecondNested Test " + (i + j) * 1_000);
         assertThat(nested.getSecondNested().getId()).isEqualTo((i + j) * 1_000);
       }
     }
@@ -166,7 +208,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testMiddleLevelWildcard() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "9.*.*.name");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "9.*.*.name"
+    );
 
     assertThat(objects).containsOnlyKeys(9L);
     TestArrayObject object = objects.get(9L);
@@ -181,14 +228,20 @@ public class ArrayIntegrationTest extends BaseTest {
       assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (j + 9) * 100);
       assertThat(nested.getNested().getId()).isNull();
 
-      assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (j + 9) * 1_000);
+      assertThat(nested.getSecondNested().getName())
+        .isEqualTo("SecondNested Test " + (j + 9) * 1_000);
       assertThat(nested.getSecondNested().getId()).isNull();
     }
   }
 
   @Test
   public void testMiddleLevelWildcardExclusion() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "!9.*.*.name");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "!9.*.*.name"
+    );
 
     assertThat(objects).containsKeys(9L);
     TestArrayObject object = objects.get(9L);
@@ -219,10 +272,12 @@ public class ArrayIntegrationTest extends BaseTest {
       for (int j = 0; j < 10; j++) {
         TestNestedObject nested = object.getNested().get(j);
 
-        assertThat(nested.getNested().getName()).isEqualTo("Nested Test " + (i + j) * 100);
+        assertThat(nested.getNested().getName())
+          .isEqualTo("Nested Test " + (i + j) * 100);
         assertThat(nested.getNested().getId()).isEqualTo((i + j) * 100);
 
-        assertThat(nested.getSecondNested().getName()).isEqualTo("SecondNested Test " + (i + j) * 1_000);
+        assertThat(nested.getSecondNested().getName())
+          .isEqualTo("SecondNested Test " + (i + j) * 1_000);
         assertThat(nested.getSecondNested().getId()).isEqualTo((i + j) * 1_000);
       }
     }
@@ -230,7 +285,12 @@ public class ArrayIntegrationTest extends BaseTest {
 
   @Test
   public void testArrayObjectWithMultiplePropertyLevels() throws IOException {
-    Map<Long, TestArrayObject> objects = getObjects(MAP_ARRAY_TYPE, "/array/object", "property", "*.name,9.id");
+    Map<Long, TestArrayObject> objects = getObjects(
+      MAP_ARRAY_TYPE,
+      "/array/object",
+      "property",
+      "*.name,9.id"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 9; i++) {

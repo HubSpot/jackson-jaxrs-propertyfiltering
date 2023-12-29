@@ -1,10 +1,9 @@
 package com.hubspot.jackson.jaxrs;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.core.filter.TokenFilter;
+import java.io.IOException;
 
 /**
  * Clone of TokenFilterContext that forces it to write empty objects and arrays
@@ -16,7 +15,7 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
    */
   private final PropertyFilteringTokenContext _parent;
 
-    /*
+  /*
     /**********************************************************
     /* Simple instance reuse slots; speed up things
     /* a bit (10-15%) for docs with lots of small
@@ -26,7 +25,7 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
 
   protected PropertyFilteringTokenContext _child;
 
-    /*
+  /*
     /**********************************************************
     /* Location/state information
     /**********************************************************
@@ -51,13 +50,18 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
    */
   protected boolean _startHandled;
 
-    /*
+  /*
     /**********************************************************
     /* Life-cycle
     /**********************************************************
      */
 
-  protected PropertyFilteringTokenContext(int type, PropertyFilteringTokenContext parent, TokenFilter filter, boolean startHandled) {
+  protected PropertyFilteringTokenContext(
+    int type,
+    PropertyFilteringTokenContext parent,
+    TokenFilter filter,
+    boolean startHandled
+  ) {
     super();
     _type = type;
     _parent = parent;
@@ -66,7 +70,11 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
     _startHandled = startHandled;
   }
 
-  protected PropertyFilteringTokenContext reset(int type, TokenFilter filter, boolean startWritten) {
+  protected PropertyFilteringTokenContext reset(
+    int type,
+    TokenFilter filter,
+    boolean startWritten
+  ) {
     _type = type;
     _filter = filter;
     _index = -1;
@@ -75,7 +83,7 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
     return this;
   }
 
-    /*
+  /*
     /**********************************************************
     /* Factory methods
     /**********************************************************
@@ -86,25 +94,33 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
     return new PropertyFilteringTokenContext(TYPE_ROOT, null, filter, true);
   }
 
-  public PropertyFilteringTokenContext createChildArrayContext(TokenFilter filter, boolean writeStart) {
+  public PropertyFilteringTokenContext createChildArrayContext(
+    TokenFilter filter,
+    boolean writeStart
+  ) {
     PropertyFilteringTokenContext ctxt = _child;
     if (ctxt == null) {
-      _child = ctxt = new PropertyFilteringTokenContext(TYPE_ARRAY, this, filter, writeStart);
+      _child =
+        ctxt = new PropertyFilteringTokenContext(TYPE_ARRAY, this, filter, writeStart);
       return ctxt;
     }
     return ctxt.reset(TYPE_ARRAY, filter, writeStart);
   }
 
-  public PropertyFilteringTokenContext createChildObjectContext(TokenFilter filter, boolean writeStart) {
+  public PropertyFilteringTokenContext createChildObjectContext(
+    TokenFilter filter,
+    boolean writeStart
+  ) {
     PropertyFilteringTokenContext ctxt = _child;
     if (ctxt == null) {
-      _child = ctxt = new PropertyFilteringTokenContext(TYPE_OBJECT, this, filter, writeStart);
+      _child =
+        ctxt = new PropertyFilteringTokenContext(TYPE_OBJECT, this, filter, writeStart);
       return ctxt;
     }
     return ctxt.reset(TYPE_OBJECT, filter, writeStart);
   }
 
-    /*
+  /*
     /**********************************************************
     /* State changes
     /**********************************************************
@@ -129,7 +145,7 @@ public class PropertyFilteringTokenContext extends JsonStreamContext {
     return _parent;
   }
 
-    /*
+  /*
     /**********************************************************
     /* Accessors, mutators
     /**********************************************************

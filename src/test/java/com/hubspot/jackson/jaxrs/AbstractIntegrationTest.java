@@ -1,13 +1,12 @@
 package com.hubspot.jackson.jaxrs;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public abstract class AbstractIntegrationTest extends BaseTest {
 
@@ -62,6 +61,7 @@ public abstract class AbstractIntegrationTest extends BaseTest {
   }
 
   protected abstract String path();
+
   protected abstract String queryParamName();
 
   protected List<TestObject> getObjects(String... queryParams) throws IOException {

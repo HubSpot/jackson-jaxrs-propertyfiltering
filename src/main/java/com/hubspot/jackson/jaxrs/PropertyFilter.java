@@ -1,5 +1,9 @@
 package com.hubspot.jackson.jaxrs;
 
+import com.fasterxml.jackson.core.filter.TokenFilter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,12 +13,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import com.fasterxml.jackson.core.filter.TokenFilter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class PropertyFilter extends TokenFilter {
+
   private final NestedPropertyFilter filter = new NestedPropertyFilter();
 
   public PropertyFilter(Collection<String> properties) {
@@ -47,8 +47,8 @@ public class PropertyFilter extends TokenFilter {
   @Override
   public String toString() {
     return new StringJoiner(", ", "PropertyFilter[", "]")
-        .add("filter=" + filter)
-        .toString();
+      .add("filter=" + filter)
+      .toString();
   }
 
   private void applyWildcardsToNamedProperties(NestedPropertyFilter root) {
@@ -66,6 +66,7 @@ public class PropertyFilter extends TokenFilter {
   }
 
   private static class NestedPropertyFilter extends TokenFilter {
+
     private final Set<String> includedProperties = new HashSet<String>();
     private final Set<String> excludedProperties = new HashSet<String>();
     private final Map<String, NestedPropertyFilter> nestedProperties = new HashMap<String, NestedPropertyFilter>();
@@ -105,7 +106,11 @@ public class PropertyFilter extends TokenFilter {
     }
 
     public boolean hasFilters() {
-      return !(includedProperties.isEmpty() && excludedProperties.isEmpty() && nestedProperties.isEmpty());
+      return !(
+        includedProperties.isEmpty() &&
+        excludedProperties.isEmpty() &&
+        nestedProperties.isEmpty()
+      );
     }
 
     public void filter(JsonNode node) {
@@ -133,7 +138,9 @@ public class PropertyFilter extends TokenFilter {
 
       if (excludedProperties.contains("*") || excludedProperties.contains(prefix)) {
         return false;
-      } else if (includedProperties.contains("*") || includedProperties.contains(prefix)) {
+      } else if (
+        includedProperties.contains("*") || includedProperties.contains(prefix)
+      ) {
         if (suffix != null && nestedProperties.containsKey(prefix)) {
           return nestedProperties.get(prefix).matches(suffix);
         } else if (nestedProperties.containsKey("*")) {
@@ -162,7 +169,11 @@ public class PropertyFilter extends TokenFilter {
 
     @Override
     public TokenFilter includeProperty(String name) {
-      if (!includedProperties.isEmpty() && !includedProperties.contains("*") && !includedProperties.contains(name)) {
+      if (
+        !includedProperties.isEmpty() &&
+        !includedProperties.contains("*") &&
+        !includedProperties.contains(name)
+      ) {
         return null;
       } else if (excludedProperties.contains("*") || excludedProperties.contains(name)) {
         return null;
@@ -178,10 +189,10 @@ public class PropertyFilter extends TokenFilter {
     @Override
     public String toString() {
       return new StringJoiner(", ", "NestedPropertyFilter[", "]")
-          .add("includedProperties=" + includedProperties)
-          .add("excludedProperties=" + excludedProperties)
-          .add("nestedProperties=" + nestedProperties)
-          .toString();
+        .add("includedProperties=" + includedProperties)
+        .add("excludedProperties=" + excludedProperties)
+        .add("nestedProperties=" + nestedProperties)
+        .toString();
     }
 
     private void filter(ObjectNode object) {

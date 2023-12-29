@@ -2,13 +2,11 @@ package com.hubspot.jackson.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hubspot.jackson.jaxrs.util.TestResource.TestNestedObject;
+import java.io.IOException;
+import java.util.Map;
+import org.junit.Test;
 
 public class NestedObjectIntegrationTest extends BaseTest {
 
@@ -17,7 +15,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testNestedObject() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "*.name");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "*.name"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -31,7 +34,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
   @Test
   public void testNestedWithoutPrefix() throws IOException {
     // no prefix, should select root properties
-    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/nested", "property", "id,name");
+    TestNestedObject object = getObjects(
+      NESTED_OBJECT_TYPE,
+      "/nested",
+      "property",
+      "id,name"
+    );
 
     assertThat(object.getNested()).isNull();
     assertThat(object.getSecondNested()).isNull();
@@ -42,7 +50,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
   @Test
   public void testNestedPrefixWithoutPeriod() throws IOException {
     // with prefix, should select nested object properties
-    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/prefix", "property", "id,name");
+    TestNestedObject object = getObjects(
+      NESTED_OBJECT_TYPE,
+      "/prefix",
+      "property",
+      "id,name"
+    );
 
     assertThat(object.getId()).isNull();
     assertThat(object.getName()).isNull();
@@ -54,7 +67,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
   @Test
   public void testNestedPrefixWithPeriod() throws IOException {
     // with prefix, should select nested object properties
-    TestNestedObject object = getObjects(NESTED_OBJECT_TYPE, "/prefix/period", "property", "id,name");
+    TestNestedObject object = getObjects(
+      NESTED_OBJECT_TYPE,
+      "/prefix/period",
+      "property",
+      "id,name"
+    );
 
     assertThat(object.getId()).isNull();
     assertThat(object.getName()).isNull();
@@ -65,7 +83,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testNestedExclusions() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "!*.name");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "!*.name"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 10; i++) {
@@ -78,7 +101,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testSecondLevelWildcard() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "9.*");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "9.*"
+    );
 
     assertThat(objects).containsOnlyKeys(9L);
     assertThat(objects.get(9L).getId()).isEqualTo(9L);
@@ -87,7 +115,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testSecondLevelWildcardExclusion() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "!9.*");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "!9.*"
+    );
 
     assertThat(objects).containsKeys(9L);
     assertThat(objects.get(9L).getId()).isNull();
@@ -103,7 +136,12 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
   @Test
   public void testMiddleLevelWildcard() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "9.*.name");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "9.*.name"
+    );
 
     assertThat(objects).containsOnlyKeys(9L);
     TestNestedObject testNestedObject = objects.get(9L);
@@ -117,12 +155,18 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
     assertThat(testNestedObject.getSecondNested()).isNotNull();
     assertThat(testNestedObject.getSecondNested().getId()).isNull();
-    assertThat(testNestedObject.getSecondNested().getName()).isEqualTo("SecondNested Test 9000");
+    assertThat(testNestedObject.getSecondNested().getName())
+      .isEqualTo("SecondNested Test 9000");
   }
 
   @Test
   public void testMiddleLevelWildcardExclusion() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "!9.*.name");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "!9.*.name"
+    );
 
     assertThat(objects).containsKeys(9L);
     TestNestedObject testNestedObject = objects.get(9L);
@@ -146,17 +190,24 @@ public class NestedObjectIntegrationTest extends BaseTest {
 
       assertThat(objects.get(i).getNested()).isNotNull();
       assertThat(objects.get(i).getNested().getId()).isEqualTo(i * 100);
-      assertThat(objects.get(i).getNested().getName()).isEqualTo("Nested Test " + i * 100);
+      assertThat(objects.get(i).getNested().getName())
+        .isEqualTo("Nested Test " + i * 100);
 
       assertThat(objects.get(i).getSecondNested()).isNotNull();
       assertThat(objects.get(i).getSecondNested().getId()).isEqualTo(i * 1_000);
-      assertThat(objects.get(i).getSecondNested().getName()).isEqualTo("SecondNested Test " + i * 1_000);
+      assertThat(objects.get(i).getSecondNested().getName())
+        .isEqualTo("SecondNested Test " + i * 1_000);
     }
   }
 
   @Test
   public void testNestedObjectWithMultiplePropertyLevels() throws IOException {
-    Map<Long, TestNestedObject> objects = getObjects(MAP_NESTED_TYPE, "/nested/object", "property", "*.name,9.id");
+    Map<Long, TestNestedObject> objects = getObjects(
+      MAP_NESTED_TYPE,
+      "/nested/object",
+      "property",
+      "*.name,9.id"
+    );
 
     assertThat(objects).hasSize(10);
     for (long i = 0; i < 9; i++) {

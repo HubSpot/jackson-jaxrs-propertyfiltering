@@ -1,18 +1,16 @@
 package com.hubspot.jackson.jaxrs.util;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.hubspot.jackson.jaxrs.PropertyFiltering;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.hubspot.jackson.jaxrs.PropertyFiltering;
 
 @Path("/test")
 @Produces(MediaType.APPLICATION_JSON)
@@ -120,10 +118,12 @@ public class TestResource {
   }
 
   private static TestNestedObject getNestedObject(long i) {
-    return new TestNestedObject(i,
-          "Test " + i,
-          new TestObject(i * 100, "Nested Test " + i * 100),
-          new TestObject(i * 1_000, "SecondNested Test " + i * 1_000));
+    return new TestNestedObject(
+      i,
+      "Test " + i,
+      new TestObject(i * 100, "Nested Test " + i * 100),
+      new TestObject(i * 1_000, "SecondNested Test " + i * 1_000)
+    );
   }
 
   private static List<TestNestedObject> getNestedObjects() {
@@ -154,10 +154,13 @@ public class TestResource {
   }
 
   public interface TestView {}
+
   public interface OtherView {}
 
   public static class TestObject {
+
     private final Long id;
+
     @JsonView(OtherView.class)
     private final String name;
 
@@ -176,10 +179,16 @@ public class TestResource {
   }
 
   public static class TestNestedObject extends TestObject {
+
     private final TestObject nested;
     private final TestObject secondNested;
 
-    public TestNestedObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") TestObject nested, @JsonProperty("secondNested") TestObject secondNested) {
+    public TestNestedObject(
+      @JsonProperty("id") Long id,
+      @JsonProperty("name") String name,
+      @JsonProperty("nested") TestObject nested,
+      @JsonProperty("secondNested") TestObject secondNested
+    ) {
       super(id, name);
       this.nested = nested;
       this.secondNested = secondNested;
@@ -195,9 +204,14 @@ public class TestResource {
   }
 
   public static class TestArrayObject extends TestObject {
+
     private final List<TestNestedObject> nested;
 
-    public TestArrayObject(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("nested") List<TestNestedObject> nested) {
+    public TestArrayObject(
+      @JsonProperty("id") Long id,
+      @JsonProperty("name") String name,
+      @JsonProperty("nested") List<TestNestedObject> nested
+    ) {
       super(id, name);
       this.nested = nested;
     }
