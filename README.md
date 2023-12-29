@@ -1,4 +1,5 @@
-# jackson-jaxrs-propertyfiltering [![Build Status](https://travis-ci.org/HubSpot/jackson-jaxrs-propertyfiltering.svg?branch=master)](https://travis-ci.org/HubSpot/jackson-jaxrs-propertyfiltering)
+# jackson-jaxrs-propertyfiltering
+
 ## Overview
 
 Library to enable automatic filtering of JSON responses from JAX-RS endpoints. Clients specify via query params what properties they want and the library handles filtering the response entities down to just those properties (see [here](#usage) for some examples). Tested with Jersey but should work with any JAX-RS implementation.
