@@ -5,6 +5,8 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.servlets.MetricsServlet;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
+import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -155,7 +157,13 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
     // Important: we are NOT to close the underlying stream after
     // mapping, so we need to instruct generator
     generator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
-    generator = new PropertyFilteringJsonGenerator(generator, filter);
+    generator =
+      new FilteringGeneratorDelegate(
+        generator,
+        filter,
+        TokenFilter.Inclusion.INCLUDE_NON_NULL,
+        true
+      );
 
     boolean ok = false;
 
