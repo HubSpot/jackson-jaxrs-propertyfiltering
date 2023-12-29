@@ -1,9 +1,9 @@
 package com.hubspot.jackson.jaxrs;
 
+import static com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
+
 import java.io.IOException;
 import java.util.List;
-
-import static com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
 
 public class AlwaysPropertiesTest extends AbstractIntegrationTest {
 
@@ -56,5 +56,4 @@ public class AlwaysPropertiesTest extends AbstractIntegrationTest {
     assertIdPresent(objects);
     assertNamePresent(objects);
   }
-
 }

@@ -1,7 +1,6 @@
 package com.hubspot.jackson.jaxrs;
 
 import com.hubspot.jackson.jaxrs.util.TestResource.TestObject;
-
 import java.util.List;
 
 public class JsonViewTest extends AbstractIntegrationTest {

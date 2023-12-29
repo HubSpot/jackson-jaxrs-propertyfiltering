@@ -1,17 +1,15 @@
 package com.hubspot.jackson.jaxrs;
 
-import java.io.IOException;
-import java.net.URL;
-
-import org.assertj.core.util.Strings;
-import org.eclipse.jetty.server.Server;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.hubspot.jackson.jaxrs.util.Helper;
+import java.io.IOException;
+import java.net.URL;
+import org.assertj.core.util.Strings;
+import org.eclipse.jetty.server.Server;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 public abstract class BaseTest {
 
@@ -32,10 +30,19 @@ public abstract class BaseTest {
     }
   }
 
-  protected <T> T getObjects(TypeReference<T> typeReference, String path, String queryParamName, String... queryParams) throws IOException {
+  protected <T> T getObjects(
+    TypeReference<T> typeReference,
+    String path,
+    String queryParamName,
+    String... queryParams
+  ) throws IOException {
     String urlString = "http://localhost:" + port + "/test" + path;
     if (queryParams.length > 0) {
-      urlString += "?" + queryParamName + "=" + Strings.join(queryParams).with("&" + queryParamName + "=");
+      urlString +=
+        "?" +
+        queryParamName +
+        "=" +
+        Strings.join(queryParams).with("&" + queryParamName + "=");
     }
 
     URL url = new URL(urlString);

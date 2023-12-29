@@ -3,7 +3,6 @@ package com.hubspot.jackson.jaxrs;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-
 import org.junit.Test;
 
 public class PropertyFilterMatchesTest {
