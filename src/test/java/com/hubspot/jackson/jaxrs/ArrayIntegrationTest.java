@@ -12,9 +12,12 @@ import org.junit.Test;
 
 public class ArrayIntegrationTest extends BaseTest {
 
-  private static final TypeReference<List<TestArrayObject>> LIST_ARRAY_TYPE = new TypeReference<List<TestArrayObject>>() {};
-  private static final TypeReference<Map<Long, TestArrayObject>> MAP_ARRAY_TYPE = new TypeReference<Map<Long, TestArrayObject>>() {};
-  private static final TypeReference<TestArrayObject> ARRAY_OBJECT_TYPE = new TypeReference<TestArrayObject>() {};
+  private static final TypeReference<List<TestArrayObject>> LIST_ARRAY_TYPE =
+    new TypeReference<List<TestArrayObject>>() {};
+  private static final TypeReference<Map<Long, TestArrayObject>> MAP_ARRAY_TYPE =
+    new TypeReference<Map<Long, TestArrayObject>>() {};
+  private static final TypeReference<TestArrayObject> ARRAY_OBJECT_TYPE =
+    new TypeReference<TestArrayObject>() {};
 
   @Test
   public void testArrayList() throws IOException {

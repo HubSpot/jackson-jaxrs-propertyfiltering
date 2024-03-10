@@ -10,7 +10,8 @@ import org.junit.Test;
 
 public class NestedListIntegrationTest extends BaseTest {
 
-  private static final TypeReference<List<TestNestedObject>> LIST_NESTED_TYPE = new TypeReference<List<TestNestedObject>>() {};
+  private static final TypeReference<List<TestNestedObject>> LIST_NESTED_TYPE =
+    new TypeReference<List<TestNestedObject>>() {};
 
   @Test
   public void testNestedObject() throws IOException {

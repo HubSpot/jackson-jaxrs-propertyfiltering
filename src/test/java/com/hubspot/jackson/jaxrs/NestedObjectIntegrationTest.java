@@ -10,8 +10,10 @@ import org.junit.Test;
 
 public class NestedObjectIntegrationTest extends BaseTest {
 
-  private static final TypeReference<Map<Long, TestNestedObject>> MAP_NESTED_TYPE = new TypeReference<Map<Long, TestNestedObject>>() {};
-  private static final TypeReference<TestNestedObject> NESTED_OBJECT_TYPE = new TypeReference<TestNestedObject>() {};
+  private static final TypeReference<Map<Long, TestNestedObject>> MAP_NESTED_TYPE =
+    new TypeReference<Map<Long, TestNestedObject>>() {};
+  private static final TypeReference<TestNestedObject> NESTED_OBJECT_TYPE =
+    new TypeReference<TestNestedObject>() {};
 
   @Test
   public void testNestedObject() throws IOException {

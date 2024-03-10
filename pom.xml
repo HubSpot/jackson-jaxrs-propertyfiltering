@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.hubspot</groupId>
     <artifactId>basepom</artifactId>
-    <version>56.1</version>
+    <version>59.2</version>
   </parent>
 
   <groupId>com.hubspot.jackson</groupId>
@@ -16,8 +16,6 @@
   <properties>
     <basepom.check.skip-spotbugs>true</basepom.check.skip-spotbugs>
 
-    <dep.jackson.version>2.12.6</dep.jackson.version>
-    <dep.jackson-databind.version>2.12.6</dep.jackson-databind.version>
     <dep.jaxb.version>2.3.2</dep.jaxb.version>
   </properties>
 
