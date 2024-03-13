@@ -10,7 +10,8 @@ import org.junit.Test;
 
 public abstract class AbstractIntegrationTest extends BaseTest {
 
-  private static final TypeReference<List<TestObject>> LIST_TYPE = new TypeReference<List<TestObject>>() {};
+  private static final TypeReference<List<TestObject>> LIST_TYPE =
+    new TypeReference<List<TestObject>>() {};
 
   @Test
   public void testNoFiltering() throws IOException {
