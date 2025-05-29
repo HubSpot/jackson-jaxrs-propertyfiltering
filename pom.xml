@@ -5,12 +5,14 @@
   <parent>
     <groupId>com.hubspot</groupId>
     <artifactId>basepom</artifactId>
-    <version>60.0</version>
+    <version>63.0</version>
   </parent>
 
   <groupId>com.hubspot.jackson</groupId>
   <artifactId>jackson-jaxrs-propertyfiltering</artifactId>
   <version>0.9.0-SNAPSHOT</version>
+
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>JAX-RS MessageBodyWriter that supports filtering via query parameters</description>
 
   <properties>
@@ -105,11 +107,6 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
       <artifactId>txw2</artifactId>
       <scope>test</scope>
     </dependency>
@@ -129,6 +126,22 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <url>https://github.com/HubSpot/jackson-jaxrs-propertyfiltering</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Jared Stehler</name>
+      <email>jstehler@hubspot.com</email>
+    </developer>
+  </developers>
 
   <scm>
     <connection>scm:git:git@github.com:HubSpot/jackson-jaxrs-propertyfiltering.git</connection>
