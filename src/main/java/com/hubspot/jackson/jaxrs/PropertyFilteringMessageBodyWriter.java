@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Optional;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
@@ -105,15 +106,10 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
   }
 
   protected MetricRegistry getMetricRegistry() {
-    MetricRegistry registry = (MetricRegistry) servletContext.getAttribute(
-      MetricsServlet.METRICS_REGISTRY
-    );
-
-    if (registry == null) {
-      registry = SharedMetricRegistries.getOrCreate("com.hubspot");
-    }
-
-    return registry;
+    return Optional
+      .ofNullable(servletContext)
+      .map(sc -> (MetricRegistry) sc.getAttribute(MetricsServlet.METRICS_REGISTRY))
+      .orElseGet(() -> SharedMetricRegistries.getOrCreate("com.hubspot"));
   }
 
   protected boolean filteringEnabled(
@@ -135,13 +131,13 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
         return delegate;
       }
 
-      if( application != null ) {	
-        for (Object o : application.getSingletons()){
-           if (o instanceof JacksonJsonProvider) {
-             delegate = (JacksonJsonProvider) o;
-             return delegate;
-           }
-         }
+      if (application != null) {
+        for (Object o : application.getSingletons()) {
+          if (o instanceof JacksonJsonProvider) {
+            delegate = (JacksonJsonProvider) o;
+            return delegate;
+          }
+        }
       }
       delegate = new JacksonJsonProvider();
       return delegate;
