@@ -133,13 +133,14 @@ public class PropertyFilteringMessageBodyWriter implements MessageBodyWriter<Obj
         return delegate;
       }
 
-      for (Object o : application.getSingletons()) {
-        if (o instanceof JacksonJsonProvider) {
-          delegate = (JacksonJsonProvider) o;
-          return delegate;
-        }
+      if( application != null ) {	
+        for (Object o : application.getSingletons()){
+           if (o instanceof JacksonJsonProvider) {
+             delegate = (JacksonJsonProvider) o;
+             return delegate;
+           }
+         }
       }
-
       delegate = new JacksonJsonProvider();
       return delegate;
     }
