@@ -69,7 +69,8 @@ public class PropertyFilter extends TokenFilter {
 
     private final Set<String> includedProperties = new HashSet<String>();
     private final Set<String> excludedProperties = new HashSet<String>();
-    private final Map<String, NestedPropertyFilter> nestedProperties = new HashMap<String, NestedPropertyFilter>();
+    private final Map<String, NestedPropertyFilter> nestedProperties =
+      new HashMap<String, NestedPropertyFilter>();
 
     public void addProperty(String property) {
       boolean excluded = property.startsWith("!");

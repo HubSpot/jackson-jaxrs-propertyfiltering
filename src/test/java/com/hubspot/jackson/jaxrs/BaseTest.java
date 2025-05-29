@@ -39,10 +39,10 @@ public abstract class BaseTest {
     String urlString = "http://localhost:" + port + "/test" + path;
     if (queryParams.length > 0) {
       urlString +=
-        "?" +
-        queryParamName +
-        "=" +
-        Strings.join(queryParams).with("&" + queryParamName + "=");
+      "?" +
+      queryParamName +
+      "=" +
+      Strings.join(queryParams).with("&" + queryParamName + "=");
     }
 
     URL url = new URL(urlString);
