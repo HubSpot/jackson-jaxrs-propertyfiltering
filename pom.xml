@@ -17,7 +17,7 @@
 
   <properties>
     <basepom.check.skip-spotbugs>true</basepom.check.skip-spotbugs>
-
+    <project.build.jdk.version>17</project.build.jdk.version>
     <dep.jaxb.version>2.3.2</dep.jaxb.version>
   </properties>
 
